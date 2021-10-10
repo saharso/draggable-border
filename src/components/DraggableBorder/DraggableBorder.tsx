@@ -1,16 +1,15 @@
 import React, {useEffect, useRef, useState} from 'react';
 import './DraggableBorder.scss';
 
-export function getElement(data: HTMLElement | string){
-    if(data instanceof Element) {return data;}
-    else if (typeof data === 'string') {return document.querySelector(data) || null;}
-    else return null;
+export function getElement(data: string){
+    return document.querySelector(data) || null;
 }
 
 export interface DragTargetApi {
     targetElement: HTMLElement;
     draggerElement: HTMLElement;
     snap?: number;
+    horizontal?: boolean;
 }
 
 class DragTarget {
@@ -19,6 +18,7 @@ class DragTarget {
     targetElement: HTMLElement;
     draggerElement: HTMLElement;
     snap: number = 100;
+    horizontal: boolean = true;
     isSlidingLeft: boolean;
     clientX: Set<number> = new Set();
     static draggerCollection: HTMLElement[] = [];
@@ -28,6 +28,7 @@ class DragTarget {
         this.updateWithApi(api);
         this.setCollection();
         this.handleEvents();
+        console.log(this.horizontal);
     }
 
     updateWithApi(api: DragTargetApi) {
@@ -112,16 +113,19 @@ class DragTarget {
 
 
 
+export type DraggableBorderProps = {
+    target?: string;
+    horizontal: boolean;
+}
 
-
-export function useTargetElement(target: HTMLElement | string, draggableBorderRef){
+export function useTargetElement(props: DraggableBorderProps, draggableBorderRef){
     const [targetElement, setTargetElement] = useState(null);
     const [draggerElement, setDraggerElement] = useState(null);
     const [targetWidth, setTargetWidth] = useState(0);
 
     useEffect(()=>{
         if(!draggableBorderRef) return;
-        setTargetElement(getElement(target));
+        setTargetElement(getElement(props.target));
         setDraggerElement(draggableBorderRef.current);
     }, [draggableBorderRef]);
 
@@ -131,19 +135,20 @@ export function useTargetElement(target: HTMLElement | string, draggableBorderRe
 
     useEffect(()=>{
         if(!draggerElement || !targetElement) return;
-        new DragTarget({draggerElement, targetElement});
+        new DragTarget({
+            draggerElement,
+            targetElement,
+            horizontal: props.horizontal,
+        });
     }, [draggerElement, targetElement]);
 }
 
-export type DraggableBorderProps = {
-    target?: HTMLElement | string;
-    direction: 'left-right' | 'up-down””';
-}
+
 const DraggableBorder: React.FunctionComponent<DraggableBorderProps> = (props)=>{
 
     const draggableBorderRef = useRef(null);
 
-    const targetElement = useTargetElement(props.target, draggableBorderRef);
+    const targetElement = useTargetElement({...props}, draggableBorderRef);
 
     useEffect(()=>{
         const el = draggableBorderRef.current;

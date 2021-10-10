@@ -9,10 +9,15 @@ const Panel: React.FunctionComponent<PanelProps> = ({}) => {
     return <article className={'Panel'}>
         <aside className={'Panel__addition'}/>
 
-        <aside id="panelSidebar" className={'Panel__sidebar'}>blbalbl</aside>
-        <DraggableBorder target={'#panelSidebar'} direction={'left-right'}/>
 
-        <main className={'Panel__main'}></main>
+        <DraggableBorder target={'#panelSidebar'} horizontal={true}/>
+        <aside id="panelSidebar" className={'Panel__sidebar'}>blbalbl</aside>
+
+        <main className={'Panel__main'}>
+            <div className={'Panel__main__top'}></div>
+            <DraggableBorder target={'#panelSidebar2'} horizontal={false}/>
+            <footer id="panelSidebar2" className={'Panel__main__bottom'}>blbalbl</footer>
+        </main>
 
     </article>;
 };
