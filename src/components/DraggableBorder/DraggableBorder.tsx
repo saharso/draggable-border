@@ -11,6 +11,93 @@ export interface DragTargetApi {
     snap?: number;
     horizontal?: boolean;
 }
+export class DragTargetUtil {
+    static draggerCollectionX: HTMLElement[] = [];
+    static targetCollectionX: HTMLElement[] = [];
+    static draggerCollectionY: HTMLElement[] = [];
+    static targetCollectionY: HTMLElement[] = [];
+    className: string;
+    handleDraggersRect(draggerElement, index){};
+    setCollection(draggerElement, targetElement){};
+    calculateTargetRect(e, targetElement): number {return null;};
+    updateTargetElementDimensions(targetElement, formula){}
+    allowSnap(targetElement, snap): boolean {return null;}
+}
+class DragTargetUtilY extends DragTargetUtil {
+    className = 'is-vertical';
+
+    constructor() {
+        super();
+    }
+
+    handleDraggersRect(draggerElement, index) {
+        draggerElement.style.top = DragTargetUtil.targetCollectionY[index].getBoundingClientRect().top - draggerElement.offsetHeight + 'px';
+        draggerElement.style.left = DragTargetUtil.targetCollectionY[index].getBoundingClientRect().left + 'px';
+        draggerElement.style.width = DragTargetUtil.targetCollectionY[index].offsetWidth + 'px';
+    }
+
+    setCollection(draggerElement, targetElement){
+        DragTargetUtil.draggerCollectionY.push(draggerElement);
+        DragTargetUtil.targetCollectionY.push(targetElement);
+    }
+
+    calculateTargetRect(e, targetElement){
+        const cursorYPosition = e.clientY;
+        const targetOriginalHeight = targetElement.offsetHeight;
+        const targetElementTopPosition = targetElement.getBoundingClientRect().top;
+        const targetElementBottomPosition = targetElement.getBoundingClientRect().bottom;
+
+        const formula = targetOriginalHeight - (cursorYPosition - targetElementTopPosition);
+
+        return formula;
+    }
+
+    updateTargetElementDimensions(targetElement, formula){
+        targetElement.style.height = formula + 'px';
+    }
+
+    allowSnap(targetElement, snap){
+        return targetElement.offsetHeight <= snap;
+    }
+};
+class DragTargetUtilX extends DragTargetUtil {
+    className = 'is-horizontal';
+
+    constructor() {
+        super();
+    }
+
+    handleDraggersRect(draggerElement, index) {
+        draggerElement.style.top = DragTargetUtil.targetCollectionX[index].getBoundingClientRect().top + 'px';
+        draggerElement.style.left = DragTargetUtil.targetCollectionX[index].getBoundingClientRect().right + 'px';
+        draggerElement.style.height = DragTargetUtil.targetCollectionX[index].offsetHeight + 'px';
+    }
+
+    setCollection(draggerElement, targetElement){
+        DragTargetUtil.draggerCollectionX.push(draggerElement);
+        DragTargetUtil.targetCollectionX.push(targetElement);
+    }
+
+    calculateTargetRect(e, targetElement){
+        const cursorXPosition = e.clientX;
+        const targetOriginalWidth = targetElement.offsetWidth;
+        const targetElementLeftPosition = targetElement.getBoundingClientRect().left;
+
+        const formula = targetOriginalWidth - targetElementLeftPosition + (cursorXPosition - targetOriginalWidth);
+
+        return formula;
+    }
+
+    updateTargetElementDimensions(targetElement, formula){
+        requestAnimationFrame(()=>{
+            targetElement.style.width = formula + 'px';
+        });
+    }
+
+    allowSnap(targetElement, snap){
+        return targetElement.offsetWidth <= snap;
+    }
+};
 
 class DragTarget {
     formula: number;
@@ -21,11 +108,8 @@ class DragTarget {
     horizontal: boolean = true;
     isSlideForward: boolean;
     clientMovement: Set<number> = new Set();
-    static draggerCollectionX: HTMLElement[] = [];
+    util: DragTargetUtil;
     static targetCollectionX: HTMLElement[] = [];
-    static draggerCollectionY: HTMLElement[] = [];
-    static targetCollectionY: HTMLElement[] = [];
-
 
     constructor(api: DragTargetApi) {
         this.updateWithApi(api);
@@ -38,33 +122,28 @@ class DragTarget {
         Object.keys(api).forEach((key)=>{
             this[key] = api[key];
         });
+        this.util = this.horizontal ? new DragTargetUtilX() : new DragTargetUtilY();
     }
 
     updateDraggerElement(){
-        this.draggerElement.classList.add(this.horizontal ? 'is-horizontal' : 'is-vertical');
+        this.draggerElement.classList.add(this.util.className);
     }
 
     setCollection() {
-        if(this.horizontal) {
-            DragTarget.draggerCollectionX.push(this.draggerElement);
-            DragTarget.targetCollectionX.push(this.targetElement);
-        } else {
-            DragTarget.draggerCollectionY.push(this.draggerElement);
-            DragTarget.targetCollectionY.push(this.targetElement);
-        }
+        this.util.setCollection(this.draggerElement, this.targetElement);
     }
 
     handleEvents(){
         window.addEventListener('mouseup', this.handleMouseUp.bind(this));
         window.addEventListener('mousemove', this.handleMouseMove.bind(this));
         window.addEventListener('resize', this.handleResize.bind(this));
-        this.updateDraggingElementXPosition();
         this.draggerElement.addEventListener('mousedown', this.handleMouseDown.bind(this));
+        this.updateDraggingElementRect();
     }
 
     handleMouseUp(e){
         this.isMouseDown = false;
-        this.updateSlideDirection(e);
+        this.updateSlideDirection();
         this.doSnap();
     }
 
@@ -74,7 +153,7 @@ class DragTarget {
     }
 
     handleResize(){
-        this.updateDraggingElementXPosition();
+        this.updateDraggingElementRect();
     }
 
     handleMouseMove(e){
@@ -82,28 +161,14 @@ class DragTarget {
         this.clientMovement.add(this.horizontal ? e.clientX : e.clientY);
         this.updateFormula(e);
         this.updateTargetElementDimensions();
-        this.updateDraggingElementXPosition();
+        this.updateDraggingElementRect();
     }
 
     updateFormula(e) {
-
-        if(this.horizontal) {
-            const cursorXPosition = e.clientX;
-            const targetOriginalWidth = this.targetElement.offsetWidth;
-            const targetElementLeftPosition = this.targetElement.getBoundingClientRect().left;
-
-            this.formula = targetOriginalWidth - targetElementLeftPosition + (cursorXPosition - targetOriginalWidth);
-        } else {
-            const cursorYPosition = e.clientY;
-            const targetOriginalHeight = this.targetElement.offsetHeight;
-            const targetElementTopPosition = this.targetElement.getBoundingClientRect().top;
-            const targetElementBottomPosition = this.targetElement.getBoundingClientRect().bottom;
-            const targetHeight = targetElementBottomPosition - targetElementTopPosition;
-            this.formula = targetOriginalHeight - (cursorYPosition - targetElementTopPosition);
-        }
-
+        this.formula = this.util.calculateTargetRect(e, this.targetElement);
     }
-    updateSlideDirection(e){
+
+    updateSlideDirection(){
         const vals = [...this.clientMovement.values()];
         const prev = vals.pop();
         const next = vals.pop();
@@ -111,42 +176,28 @@ class DragTarget {
     }
 
     updateTargetElementDimensions(){
-        requestAnimationFrame(()=>{
-            this.horizontal ?
-                this.targetElement.style.width = this.formula + 'px' :
-                this.targetElement.style.height = this.formula + 'px';
-        });
+        this.util.updateTargetElementDimensions(this.targetElement, this.formula);
     }
 
-    updateDraggingElementXPosition(){
+    updateDraggingElementRect(){
         requestAnimationFrame(()=>{
-            DragTarget.draggerCollectionX.forEach((draggerElement, index) => {
-                draggerElement.style.top = DragTarget.targetCollectionX[index].getBoundingClientRect().top + 'px';
-                draggerElement.style.left = DragTarget.targetCollectionX[index].getBoundingClientRect().right + 'px';
-                draggerElement.style.height = DragTarget.targetCollectionX[index].offsetHeight + 'px';
+            DragTargetUtil.draggerCollectionX.forEach((draggerElement, index) => {
+                new DragTargetUtilX().handleDraggersRect(draggerElement, index);
             });
-            DragTarget.draggerCollectionY.forEach((draggerElement, index) => {
-                draggerElement.style.top = DragTarget.targetCollectionY[index].getBoundingClientRect().top - draggerElement.offsetHeight + 'px';
-                draggerElement.style.left = DragTarget.targetCollectionY[index].getBoundingClientRect().left + 'px';
-                draggerElement.style.width = DragTarget.targetCollectionY[index].offsetWidth + 'px';
+            DragTargetUtil.draggerCollectionY.forEach((draggerElement, index) => {
+                new DragTargetUtilY().handleDraggersRect(draggerElement, index);
             });
         });
     }
 
     doSnap(){
-        if(!this.isSlideForward) return;
-        if(this.horizontal) {
-            if(this.targetElement.offsetWidth <= this.snap) {
-                this.formula = 0;
-                this.updateTargetElementDimensions();
-                this.updateDraggingElementXPosition();
-            }
-        } else {
-            if(this.targetElement.offsetHeight <= this.snap) {
-                this.formula = 0;
-                this.updateTargetElementDimensions();
-                this.updateDraggingElementXPosition();
-            }
+        if(
+            this.isSlideForward &&
+            this.util.allowSnap(this.targetElement, this.snap)
+        ) {
+            this.formula = 0;
+            this.updateTargetElementDimensions();
+            this.updateDraggingElementRect();
         }
     }
 }
