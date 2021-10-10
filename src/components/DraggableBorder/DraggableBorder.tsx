@@ -7,39 +7,111 @@ export function getElement(data: HTMLElement | string){
     else return null;
 }
 
-let _targetElement;
-let _formula;
-let _isMouseDown: boolean;
-
-function _updateTargetElementWidth(){
-    requestAnimationFrame(()=>{
-        _targetElement.style.width = _formula + 'px';
-    });
+export interface DragTargetApi {
+    targetElement: HTMLElement;
+    draggerElement: HTMLElement;
+    snap?: number;
 }
 
-export function handleMouseUp(e){
-    _isMouseDown = false;
-}
-export function handleMouseDown(e){
-    _isMouseDown = true;
+class DragTarget {
+    formula: number;
+    isMouseDown: boolean;
+    targetElement: HTMLElement;
+    draggerElement: HTMLElement;
+    snap: number = 100;
+    isSlidingLeft: boolean;
+    clientX: Set<number> = new Set();
+    static draggerCollection: HTMLElement[] = [];
+    static targetCollection: HTMLElement[] = [];
+
+    constructor(api: DragTargetApi) {
+        this.updateWithApi(api);
+        this.setCollection();
+        this.handleEvents();
+    }
+
+    updateWithApi(api: DragTargetApi) {
+        Object.keys(api).forEach((key)=>{
+            this[key] = api[key];
+        });
+    }
+
+    setCollection() {
+        DragTarget.draggerCollection.push(this.draggerElement);
+        DragTarget.targetCollection.push(this.targetElement);
+    }
+    handleEvents(){
+        window.addEventListener('mouseup', this.handleMouseUp.bind(this));
+        window.addEventListener('mousemove', this.handleMouseMove.bind(this));
+        window.addEventListener('resize', this.handleResize.bind(this));
+        this.updateDraggingElementXPosition();
+        this.draggerElement.addEventListener('mousedown', this.handleMouseDown.bind(this));
+    }
+
+    handleMouseUp(e){
+        this.isMouseDown = false;
+        this.updateSlideDirection(e);
+        this.doSnap();
+    }
+
+    handleMouseDown(){
+        this.clientX.clear();
+        this.isMouseDown = true;
+    }
+
+    handleResize(){
+        this.updateDraggingElementXPosition();
+    }
+
+    handleMouseMove(e){
+        if(!this.isMouseDown) return;
+        this.clientX.add(e.clientX);
+        this.updateFormula(e);
+        this.updateTargetElementWidth();
+        this.updateDraggingElementXPosition();
+    }
+
+    updateFormula(e) {
+        const cursorXPosition = e.clientX;
+        const targetOriginalWidth = this.targetElement.offsetWidth;
+        const targetElementLeftPosition = this.targetElement.getBoundingClientRect().left;
+
+        this.formula = targetOriginalWidth - targetElementLeftPosition + (cursorXPosition - targetOriginalWidth);
+
+    }
+    updateSlideDirection(e){
+        const vals = [...this.clientX.values()];
+        const prev = vals.pop();
+        const next = vals.pop();
+        this.isSlidingLeft = prev < next;
+    }
+
+    updateTargetElementWidth(){
+        requestAnimationFrame(()=>{
+            this.targetElement.style.width = this.formula + 'px';
+        });
+    }
+
+    updateDraggingElementXPosition(){
+        requestAnimationFrame(()=>{
+            DragTarget.draggerCollection.forEach((draggerElement, index)=>{
+                draggerElement.style.left = DragTarget.targetCollection[index].getBoundingClientRect().right + 'px';
+            });
+        });
+    }
+
+    doSnap(){
+        if(!this.isSlidingLeft) return;
+        if(this.targetElement.offsetWidth <= this.snap) {
+            this.formula = 0;
+            this.updateTargetElementWidth();
+            this.updateDraggingElementXPosition();
+        }
+    }
 }
 
-export function handleDragStart(e){
-    // console.log('dragstart', e);
-}
-export function handleMouseMove(e){
-    if(!_isMouseDown) return;
-    console.log('drag', e);
-    const cursorXPosition = e.clientX;
-    const targetOriginalWidth = _targetElement.offsetWidth;
-    console.log(cursorXPosition - targetOriginalWidth);
-    _formula = targetOriginalWidth + (cursorXPosition - targetOriginalWidth);
-    _updateTargetElementWidth();
-}
-export function handleDragEnd(e){
-    // console.log('dragend', e);
-    _updateTargetElementWidth();
-}
+
+
 
 
 export function useTargetElement(target: HTMLElement | string, draggableBorderRef){
@@ -55,21 +127,12 @@ export function useTargetElement(target: HTMLElement | string, draggableBorderRe
 
     useEffect(()=>{
         if(!targetElement) return;
-        const targetElWidth = targetElement.offsetWidth;
-        targetElement.style.width = targetElWidth + 'px';
-        _targetElement = targetElement;
-        setTargetWidth(targetElWidth);
-
     }, [targetElement]);
 
     useEffect(()=>{
-        if(!draggerElement) return;
-        console.log(draggerElement);
-        document.addEventListener('mouseup', handleMouseUp);
-        document.addEventListener('mousemove', handleMouseMove);
-        draggerElement.addEventListener('mousedown', handleMouseDown);
-
-    }, [draggerElement]);
+        if(!draggerElement || !targetElement) return;
+        new DragTarget({draggerElement, targetElement});
+    }, [draggerElement, targetElement]);
 }
 
 export type DraggableBorderProps = {

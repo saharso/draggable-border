@@ -6,3 +6,11 @@
   width: 30%;
   background-color: cornflowerblue;
 }
+.Panel__addition {
+  width: 80px;
+  background-color: darkorange;
+}
+.Panel__main {
+  flex-grow: 1;
+  width: 0;
+}
