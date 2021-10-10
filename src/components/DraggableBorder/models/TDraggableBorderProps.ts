@@ -1,5 +1,5 @@
-type DraggableBorderProps = {
+type TDraggableBorderProps = {
     target?: string;
     horizontal: boolean;
 }
-export default DraggableBorderProps;
+export default TDraggableBorderProps;
