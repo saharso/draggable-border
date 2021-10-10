@@ -1,7 +1,10 @@
 .DraggableBorder {
   position: absolute;
   width: 4px;
-  height: 100%;
+  height: 4px;
   background-color: black;
   cursor: col-resize;
+  &.is-vertical {
+    cursor: row-resize;
+  }
 }

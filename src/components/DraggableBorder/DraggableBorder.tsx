@@ -19,16 +19,19 @@ class DragTarget {
     draggerElement: HTMLElement;
     snap: number = 100;
     horizontal: boolean = true;
-    isSlidingLeft: boolean;
-    clientX: Set<number> = new Set();
-    static draggerCollection: HTMLElement[] = [];
-    static targetCollection: HTMLElement[] = [];
+    isSlideForward: boolean;
+    clientMovement: Set<number> = new Set();
+    static draggerCollectionX: HTMLElement[] = [];
+    static targetCollectionX: HTMLElement[] = [];
+    static draggerCollectionY: HTMLElement[] = [];
+    static targetCollectionY: HTMLElement[] = [];
+
 
     constructor(api: DragTargetApi) {
         this.updateWithApi(api);
+        this.updateDraggerElement();
         this.setCollection();
         this.handleEvents();
-        console.log(this.horizontal);
     }
 
     updateWithApi(api: DragTargetApi) {
@@ -37,10 +40,20 @@ class DragTarget {
         });
     }
 
-    setCollection() {
-        DragTarget.draggerCollection.push(this.draggerElement);
-        DragTarget.targetCollection.push(this.targetElement);
+    updateDraggerElement(){
+        this.draggerElement.classList.add(this.horizontal ? 'is-horizontal' : 'is-vertical');
     }
+
+    setCollection() {
+        if(this.horizontal) {
+            DragTarget.draggerCollectionX.push(this.draggerElement);
+            DragTarget.targetCollectionX.push(this.targetElement);
+        } else {
+            DragTarget.draggerCollectionY.push(this.draggerElement);
+            DragTarget.targetCollectionY.push(this.targetElement);
+        }
+    }
+
     handleEvents(){
         window.addEventListener('mouseup', this.handleMouseUp.bind(this));
         window.addEventListener('mousemove', this.handleMouseMove.bind(this));
@@ -56,7 +69,7 @@ class DragTarget {
     }
 
     handleMouseDown(){
-        this.clientX.clear();
+        this.clientMovement.clear();
         this.isMouseDown = true;
     }
 
@@ -66,47 +79,74 @@ class DragTarget {
 
     handleMouseMove(e){
         if(!this.isMouseDown) return;
-        this.clientX.add(e.clientX);
+        this.clientMovement.add(this.horizontal ? e.clientX : e.clientY);
         this.updateFormula(e);
-        this.updateTargetElementWidth();
+        this.updateTargetElementDimensions();
         this.updateDraggingElementXPosition();
     }
 
     updateFormula(e) {
-        const cursorXPosition = e.clientX;
-        const targetOriginalWidth = this.targetElement.offsetWidth;
-        const targetElementLeftPosition = this.targetElement.getBoundingClientRect().left;
 
-        this.formula = targetOriginalWidth - targetElementLeftPosition + (cursorXPosition - targetOriginalWidth);
+        if(this.horizontal) {
+            const cursorXPosition = e.clientX;
+            const targetOriginalWidth = this.targetElement.offsetWidth;
+            const targetElementLeftPosition = this.targetElement.getBoundingClientRect().left;
+
+            this.formula = targetOriginalWidth - targetElementLeftPosition + (cursorXPosition - targetOriginalWidth);
+        } else {
+            const cursorYPosition = e.clientY;
+            const targetOriginalHeight = this.targetElement.offsetHeight;
+            const targetElementTopPosition = this.targetElement.getBoundingClientRect().top;
+            const targetElementBottomPosition = this.targetElement.getBoundingClientRect().bottom;
+            const targetHeight = targetElementBottomPosition - targetElementTopPosition;
+            this.formula = targetOriginalHeight - (cursorYPosition - targetElementTopPosition);
+        }
 
     }
     updateSlideDirection(e){
-        const vals = [...this.clientX.values()];
+        const vals = [...this.clientMovement.values()];
         const prev = vals.pop();
         const next = vals.pop();
-        this.isSlidingLeft = prev < next;
+        this.isSlideForward = this.horizontal ? prev < next : prev > next;
     }
 
-    updateTargetElementWidth(){
+    updateTargetElementDimensions(){
         requestAnimationFrame(()=>{
-            this.targetElement.style.width = this.formula + 'px';
+            this.horizontal ?
+                this.targetElement.style.width = this.formula + 'px' :
+                this.targetElement.style.height = this.formula + 'px';
         });
     }
 
     updateDraggingElementXPosition(){
         requestAnimationFrame(()=>{
-            DragTarget.draggerCollection.forEach((draggerElement, index)=>{
-                draggerElement.style.left = DragTarget.targetCollection[index].getBoundingClientRect().right + 'px';
+            DragTarget.draggerCollectionX.forEach((draggerElement, index) => {
+                draggerElement.style.top = DragTarget.targetCollectionX[index].getBoundingClientRect().top + 'px';
+                draggerElement.style.left = DragTarget.targetCollectionX[index].getBoundingClientRect().right + 'px';
+                draggerElement.style.height = DragTarget.targetCollectionX[index].offsetHeight + 'px';
+            });
+            DragTarget.draggerCollectionY.forEach((draggerElement, index) => {
+                draggerElement.style.top = DragTarget.targetCollectionY[index].getBoundingClientRect().top - draggerElement.offsetHeight + 'px';
+                draggerElement.style.left = DragTarget.targetCollectionY[index].getBoundingClientRect().left + 'px';
+                draggerElement.style.width = DragTarget.targetCollectionY[index].offsetWidth + 'px';
             });
         });
     }
 
     doSnap(){
-        if(!this.isSlidingLeft) return;
-        if(this.targetElement.offsetWidth <= this.snap) {
-            this.formula = 0;
-            this.updateTargetElementWidth();
-            this.updateDraggingElementXPosition();
+        if(!this.isSlideForward) return;
+        if(this.horizontal) {
+            if(this.targetElement.offsetWidth <= this.snap) {
+                this.formula = 0;
+                this.updateTargetElementDimensions();
+                this.updateDraggingElementXPosition();
+            }
+        } else {
+            if(this.targetElement.offsetHeight <= this.snap) {
+                this.formula = 0;
+                this.updateTargetElementDimensions();
+                this.updateDraggingElementXPosition();
+            }
         }
     }
 }
