@@ -1,14 +1,14 @@
 import React from 'react';
 import './App.scss';
 import AppContext from './models/context';
-import Panel from './components/Demo/Panel';
+import Demo from './components/Demo/Demo';
 
 function App() {
     
 
     return (
         <AppContext.Provider value={{}}>
-            <Panel/>
+            <Demo/>
         </AppContext.Provider>
     );
 }

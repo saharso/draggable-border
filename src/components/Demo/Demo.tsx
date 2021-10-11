@@ -1,10 +1,10 @@
 import React from 'react';
-import './Panel.scss';
+import './Demo.scss';
 import DraggableBorder from '../DraggableBorder/DraggableBorder';
 
 export type PanelProps = {}
 
-const Panel: React.FunctionComponent<PanelProps> = ({}) => {
+const Demo: React.FunctionComponent<PanelProps> = ({}) => {
 
     return <>
         <DraggableBorder target={'#panelSidebar2'} horizontal={false}/>
@@ -41,4 +41,4 @@ const Panel: React.FunctionComponent<PanelProps> = ({}) => {
     </>;
 };
 
-export default Panel;
+export default Demo;
