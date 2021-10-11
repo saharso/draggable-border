@@ -9,13 +9,13 @@ const Panel: React.FunctionComponent<PanelProps> = ({}) => {
     return <article className={'Panel'}>
         <aside className={'Panel__addition'}/>
 
-
         <DraggableBorder target={'#panelSidebar'} horizontal={true}/>
+
         <aside id="panelSidebar" className={'Panel__sidebar l-column'}>
             <div id="stretch" className={'l-stretch'}></div>
 
             <DraggableBorder target={'#panelSidebar3'} horizontal={false}/>
-            <footer id="panelSidebar3" className={'Panel__main__bottom'}></footer>
+            <section id="panelSidebar3" className={'Panel__main__bottom'}></section>
 
         </aside>
 
@@ -23,10 +23,12 @@ const Panel: React.FunctionComponent<PanelProps> = ({}) => {
             <div className={'Panel__main__top l-stretch'}></div>
 
             <DraggableBorder target={'#panelSidebar2'} horizontal={false}/>
-            <footer id="panelSidebar2" className={'Panel__main__bottom'}></footer>
+            <section id="panelSidebar2" className={'Panel__main__bottom'}></section>
 
             <DraggableBorder target={'#panelSidebar4'} horizontal={false}/>
-            <footer id="panelSidebar4" className={'Panel__main__bottom'}></footer>
+            <section id="panelSidebar4" className={'Panel__main__bottom'}></section>
+
+            <footer className={'Panel-footerWithConstantHeight'}>footer</footer>
         </main>
 
     </article>;
