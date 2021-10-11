@@ -1,6 +1,7 @@
 import IDragTargetApi from './IDragTargetApi';
 import DragTargetRectUtil from './DragTargetRectUtil';
 import DragTargetDomUtil from './DragTargetDomUtil';
+import IOnAfterDragApi from './IOnAfterDragApi';
 
 export default class DragTarget implements IDragTargetApi {
     formula: number;
@@ -20,6 +21,7 @@ export default class DragTarget implements IDragTargetApi {
         this.updateWithApi(api);
         this.updateDraggerElement();
         this.handleEvents();
+        this.rectUtil.updateDraggingElementsRect();
     }
 
     private updateWithApi(api: IDragTargetApi) {
@@ -39,7 +41,6 @@ export default class DragTarget implements IDragTargetApi {
         window.addEventListener('mousemove', this.handleMouseMove.bind(this));
         window.addEventListener('resize', this.handleResize.bind(this));
         this.draggerElement.addEventListener('mousedown', this.handleMouseDown.bind(this));
-        this.rectUtil.updateDraggingElementsRect();
     }
 
     private handleMouseUp(e){
@@ -47,7 +48,7 @@ export default class DragTarget implements IDragTargetApi {
         this.isMouseDown = false;
         this.updateSlideDirection();
         this.doSnap();
-        this.onAfterDrag && this.onAfterDrag({
+        this.onAfterDrag && this.onAfterDrag(<IOnAfterDragApi>{
             event: e,
             el: this.targetElement,
             horizontal: this.horizontal,

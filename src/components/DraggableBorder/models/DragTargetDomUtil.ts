@@ -1,5 +1,33 @@
 import IDragTargetApi from './IDragTargetApi';
 
+function computeStyle(el: HTMLElement, prop: string){
+    return window.getComputedStyle(el).getPropertyValue(prop);
+}
+function getDisplayLevel(el: HTMLElement) {
+    return computeStyle(el, 'display');
+}
+function getWidth(el: HTMLElement) {
+    return window.getComputedStyle(el).getPropertyValue('width');
+}
+function isAutoDimensions(el: HTMLElement){
+    let clone = <HTMLElement>el.cloneNode(true);
+    clone.style.display = 'inline-block';
+    clone.style.position = 'fixed';
+    document.body.appendChild(clone);
+    clone.innerHTML = 'foo';
+    const widthWithContent = clone.offsetWidth;
+    const heightWithContent = clone.offsetHeight;
+    clone.innerHTML = '';
+    const widthWithoutContent = clone.offsetWidth;
+    const heightWithoutContent = clone.offsetHeight;
+    clone.parentNode.removeChild(clone);
+    clone = null;
+
+    return {
+        isAutoWidth: widthWithContent === widthWithoutContent,
+        isAutoHeight: heightWithContent === heightWithoutContent,
+    };
+}
 export default class DragTargetDomUtil {
     horizontal: boolean;
     targetElement: HTMLElement
@@ -23,7 +51,7 @@ export default class DragTargetDomUtil {
     private addClasses(){
         if(this.targetElement.classList.contains('DraggableBorder-target')) return;
         this.targetElement.classList.add('DraggableBorder-target');
-        this.stretchElement.classList.add('DraggableBorder-stretch');
+        this.stretchElement?.classList.add('DraggableBorder-stretch');
         const parent = <HTMLElement>this.targetElement.parentNode;
         const children = <HTMLElement[]>Array.from(parent.children);
         parent.classList.add('DraggableBorder-parent', this.horizontalClassName);
@@ -33,7 +61,7 @@ export default class DragTargetDomUtil {
     private addClassToSiblings(children: HTMLElement[]){
         const siblings = this.getChildSiblings(children);
         siblings.forEach((el)=>{
-            el.classList.toggle('DraggableBorder-sibling', !!siblings.find(e=>e===el));
+            el.classList.toggle('DraggableBorder-stretch', !!siblings.find(e=>e===el));
         });
     }
 
@@ -41,7 +69,9 @@ export default class DragTargetDomUtil {
         const siblings = [].filter.call(children, (child)=>{
             const isTarget = child.classList.contains('DraggableBorder-target');
             const isDragger = child.classList.contains('DraggableBorder');
-            return !(isTarget || isDragger);
+            const autoDim = isAutoDimensions(child);
+            const isAutoDim = this.horizontal ? autoDim.isAutoWidth : autoDim.isAutoHeight;
+            return !(isTarget || isDragger || isAutoDim);
         });
         return siblings;
     }

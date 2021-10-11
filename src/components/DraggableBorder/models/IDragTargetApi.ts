@@ -1,9 +1,4 @@
-interface IOnDragApi {
-    dimension: number;
-    el: HTMLElement;
-    event: MouseEvent;
-    horizontal: boolean;
-}
+import IOnAfterDragApi from './IOnAfterDragApi';
 
 interface IDragTargetApi {
     targetElement: HTMLElement;
@@ -11,7 +6,7 @@ interface IDragTargetApi {
     stretchElement: HTMLElement;
     snap?: number;
     horizontal?: boolean;
-    onAfterDrag?: (e: IOnDragApi) => any;
+    onAfterDrag?: (e: IOnAfterDragApi) => any;
 }
 
 export default IDragTargetApi;
