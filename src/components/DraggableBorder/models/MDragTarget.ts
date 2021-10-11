@@ -81,13 +81,16 @@ export default class MDragTarget {
     }
 
     doSnap(){
-        if(
-            this.isSlideForward &&
-            this.util.allowSnap(this.targetElement, this.snap)
-        ) {
-            this.formula = 0;
+        const conditions = [
+            this.isSlideForward,
+            this.util.allowSnap(this.targetElement, this.snap),
+        ].every(e=>e);
+
+        if(conditions){
+            this.formula = this.util.draggerElementDim(this.draggerElement);
             this.updateTargetElementDimensions();
             this.util.updateDraggingElementsRect();
         }
+        this.draggerElement.classList.toggle('is-snapped', this.util.allowSnap(this.targetElement, this.snap));
     }
 }

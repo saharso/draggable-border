@@ -4,7 +4,11 @@
   height: 4px;
   background-color: black;
   cursor: col-resize;
+  user-select: none;
   &.is-vertical {
     cursor: row-resize;
+  }
+  &.is-snapped {
+    background-color: deeppink;
   }
 }

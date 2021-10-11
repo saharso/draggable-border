@@ -93,7 +93,17 @@ export default class DragTargetUtil {
         };
         return options[this.horizontalKey]();
     }
-
+    draggerElementDim(draggerElement){
+        const options: TDragTargetUtilOptions = {
+            horizontal: () => {
+                return draggerElement.offsetWidth;
+            },
+            vertical: () => {
+                return draggerElement.offsetHeight;
+            }
+        };
+        return options[this.horizontalKey]();
+    }
     updateDraggingElementsRect(){
         requestAnimationFrame(()=>{
             DragTargetUtil.draggerCollectionX.forEach((draggerElement, index) => {
@@ -104,4 +114,6 @@ export default class DragTargetUtil {
             });
         });
     }
+
+
 };
