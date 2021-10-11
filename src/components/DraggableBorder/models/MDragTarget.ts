@@ -1,29 +1,33 @@
-import DragTargetApi from './IDragTargetApi';
+import IDragTargetApi from './IDragTargetApi';
 import DragTargetUtil from './MDragTargetUtil';
+import DomUtil from './DomUtil';
 
-export default class MDragTarget {
+export default class MDragTarget implements IDragTargetApi {
     formula: number;
     isMouseDown: boolean;
     targetElement: HTMLElement;
     draggerElement: HTMLElement;
+    stretchElement: HTMLElement;
     snap: number = 100;
     horizontal: boolean = true;
     isSlideForward: boolean;
     clientMovement: Set<number> = new Set();
     util: DragTargetUtil;
+    domUtil: DomUtil;
 
-    constructor(api: DragTargetApi) {
+    constructor(api: IDragTargetApi) {
         this.updateWithApi(api);
         this.updateDraggerElement();
         this.setCollection();
         this.handleEvents();
     }
 
-    updateWithApi(api: DragTargetApi) {
+    updateWithApi(api: IDragTargetApi) {
         Object.keys(api).forEach((key)=>{
             this[key] = api[key];
         });
         this.util = new DragTargetUtil(this.horizontal);
+        this.domUtil = new DomUtil(api);
     }
 
     updateDraggerElement(){
@@ -81,9 +85,10 @@ export default class MDragTarget {
     }
 
     doSnap(){
+        const allowSnap = this.util.allowSnap(this.targetElement, this.snap);
         const conditions = [
             this.isSlideForward,
-            this.util.allowSnap(this.targetElement, this.snap),
+            allowSnap,
         ].every(e=>e);
 
         if(conditions){
@@ -91,6 +96,6 @@ export default class MDragTarget {
             this.updateTargetElementDimensions();
             this.util.updateDraggingElementsRect();
         }
-        this.draggerElement.classList.toggle('is-snapped', this.util.allowSnap(this.targetElement, this.snap));
+        this.domUtil.toggleSnappedClasses(this.targetElement, this.draggerElement, allowSnap);
     }
 }

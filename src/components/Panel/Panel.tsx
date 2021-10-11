@@ -10,11 +10,11 @@ const Panel: React.FunctionComponent<PanelProps> = ({}) => {
         <aside className={'Panel__addition'}/>
 
 
-        <DraggableBorder target={'#panelSidebar'} horizontal={true}/>
+        <DraggableBorder target={'#panelSidebar'} horizontal={true} stretch={'.Panel__main'}/>
         <aside id="panelSidebar" className={'Panel__sidebar l-column'}>
-            <div className={'l-stretch'}></div>
+            <div id="stretch" className={'l-stretch'}></div>
 
-            <DraggableBorder target={'#panelSidebar3'} horizontal={false}/>
+            <DraggableBorder target={'#panelSidebar3'} horizontal={false} stretch={'#stretch'}/>
             <footer id="panelSidebar3" className={'Panel__main__bottom'}></footer>
 
         </aside>
@@ -22,10 +22,10 @@ const Panel: React.FunctionComponent<PanelProps> = ({}) => {
         <main className={'Panel__main l-column'}>
             <div className={'Panel__main__top l-stretch'}></div>
 
-            <DraggableBorder target={'#panelSidebar2'} horizontal={false}/>
+            <DraggableBorder target={'#panelSidebar2'} horizontal={false} stretch={'.Panel__main__top'}/>
             <footer id="panelSidebar2" className={'Panel__main__bottom'}></footer>
 
-            <DraggableBorder target={'#panelSidebar4'} horizontal={false}/>
+            <DraggableBorder target={'#panelSidebar4'} horizontal={false} stretch={'.Panel__main__top'}/>
             <footer id="panelSidebar4" className={'Panel__main__bottom'}></footer>
         </main>
 

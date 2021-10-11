@@ -1,8 +1,9 @@
-interface DragTargetApi {
+interface IDragTargetApi {
     targetElement: HTMLElement;
     draggerElement: HTMLElement;
+    stretchElement: HTMLElement;
     snap?: number;
     horizontal?: boolean;
 }
 
-export default DragTargetApi;
+export default IDragTargetApi;

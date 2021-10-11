@@ -12,3 +12,13 @@
     background-color: deeppink;
   }
 }
+
+.DraggableBorder-parent {
+  display: flex;
+}
+.DraggableBorder-parent.is-vertical {
+  flex-direction: column;
+}
+.DraggableBorder-stretch {
+  flex: 1 1;
+}

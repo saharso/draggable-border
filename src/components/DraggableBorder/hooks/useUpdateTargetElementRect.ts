@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import TDraggableBorderProps from '../models/TDraggableBorderProps';
-import DragTargetApi from '../models/IDragTargetApi';
+import IDragTargetApi from '../models/IDragTargetApi';
 import MDragTarget from '../models/MDragTarget';
 
 export function getElement(data: string){
@@ -10,11 +10,12 @@ export function getElement(data: string){
 export default function useUpdateTargetElementRect(props: TDraggableBorderProps, draggableBorderRef){
     const [targetElement, setTargetElement] = useState(null);
     const [draggerElement, setDraggerElement] = useState(null);
-    const [targetWidth, setTargetWidth] = useState(0);
+    const [stretchElement, setStretchElement] = useState(null);
 
     useEffect(()=>{
         if(!draggableBorderRef) return;
         setTargetElement(getElement(props.target));
+        setStretchElement(getElement(props.stretch));
         setDraggerElement(draggableBorderRef.current);
     }, [draggableBorderRef]);
 
@@ -23,11 +24,14 @@ export default function useUpdateTargetElementRect(props: TDraggableBorderProps,
     }, [targetElement]);
 
     useEffect(()=>{
-        if(!draggerElement || !targetElement) return;
+
+        if(!(draggerElement || targetElement || stretchElement)) return;
+        console.log(stretchElement);
         new MDragTarget({
+            ...props,
+            stretchElement,
             draggerElement,
             targetElement,
-            horizontal: props.horizontal,
         });
-    }, [draggerElement, targetElement]);
+    }, [draggerElement, targetElement, stretchElement]);
 }
