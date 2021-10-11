@@ -1,8 +1,8 @@
 import IDragTargetApi from './IDragTargetApi';
-import DragTargetUtil from './MDragTargetUtil';
-import DomUtil from './DomUtil';
+import DragTargetRectUtil from './DragTargetRectUtil';
+import DragTargetDomUtil from './DragTargetDomUtil';
 
-export default class MDragTarget implements IDragTargetApi {
+export default class DragTarget implements IDragTargetApi {
     formula: number;
     isMouseDown: boolean;
     targetElement: HTMLElement;
@@ -12,8 +12,8 @@ export default class MDragTarget implements IDragTargetApi {
     horizontal: boolean = true;
     isSlideForward: boolean;
     clientMovement: Set<number> = new Set();
-    util: DragTargetUtil;
-    domUtil: DomUtil;
+    rectUtil: DragTargetRectUtil;
+    domUtil: DragTargetDomUtil;
 
     constructor(api: IDragTargetApi) {
         this.updateWithApi(api);
@@ -26,16 +26,16 @@ export default class MDragTarget implements IDragTargetApi {
         Object.keys(api).forEach((key)=>{
             this[key] = api[key];
         });
-        this.util = new DragTargetUtil(this.horizontal);
-        this.domUtil = new DomUtil(api);
+        this.rectUtil = new DragTargetRectUtil(this.horizontal);
+        this.domUtil = new DragTargetDomUtil(api);
     }
 
     updateDraggerElement(){
-        this.draggerElement.classList.add(this.util.className);
+        this.draggerElement.classList.add(this.rectUtil.className);
     }
 
     setCollection() {
-        this.util.setCollection(this.draggerElement, this.targetElement);
+        this.rectUtil.setCollection(this.draggerElement, this.targetElement);
     }
 
     handleEvents(){
@@ -43,34 +43,37 @@ export default class MDragTarget implements IDragTargetApi {
         window.addEventListener('mousemove', this.handleMouseMove.bind(this));
         window.addEventListener('resize', this.handleResize.bind(this));
         this.draggerElement.addEventListener('mousedown', this.handleMouseDown.bind(this));
-        this.util.updateDraggingElementsRect();
+        this.rectUtil.updateDraggingElementsRect();
     }
 
     handleMouseUp(e){
+        e.preventDefault();
         this.isMouseDown = false;
         this.updateSlideDirection();
         this.doSnap();
     }
 
-    handleMouseDown(){
+    handleMouseDown(e){
+        e.preventDefault();
         this.clientMovement.clear();
         this.isMouseDown = true;
     }
 
     handleResize(){
-        this.util.updateDraggingElementsRect();
+        this.rectUtil.updateDraggingElementsRect();
     }
 
     handleMouseMove(e){
         if(!this.isMouseDown) return;
+        e.preventDefault();
         this.clientMovement.add(this.horizontal ? e.clientX : e.clientY);
         this.updateFormula(e);
         this.updateTargetElementDimensions();
-        this.util.updateDraggingElementsRect();
+        this.rectUtil.updateDraggingElementsRect();
     }
 
     updateFormula(e) {
-        this.formula = this.util.calculateTargetRect(e, this.targetElement);
+        this.formula = this.rectUtil.calculateTargetRect(e, this.targetElement);
     }
 
     updateSlideDirection(){
@@ -81,20 +84,20 @@ export default class MDragTarget implements IDragTargetApi {
     }
 
     updateTargetElementDimensions(){
-        this.util.updateTargetElementDimensions(this.targetElement, this.formula);
+        this.rectUtil.updateTargetElementDimensions(this.targetElement, this.formula);
     }
 
     doSnap(){
-        const allowSnap = this.util.allowSnap(this.targetElement, this.snap);
+        const allowSnap = this.rectUtil.allowSnap(this.targetElement, this.snap);
         const conditions = [
             this.isSlideForward,
             allowSnap,
         ].every(e=>e);
 
         if(conditions){
-            this.formula = this.util.draggerElementDim(this.draggerElement);
+            this.formula = this.rectUtil.draggerElementDim(this.draggerElement);
             this.updateTargetElementDimensions();
-            this.util.updateDraggingElementsRect();
+            this.rectUtil.updateDraggingElementsRect();
         }
         this.domUtil.toggleSnappedClasses(this.targetElement, this.draggerElement, allowSnap);
     }

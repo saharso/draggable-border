@@ -1,6 +1,6 @@
 import IDragTargetApi from './IDragTargetApi';
 
-export default class DomUtil {
+export default class DragTargetDomUtil {
     horizontal: boolean;
     targetElement: HTMLElement
     stretchElement: HTMLElement

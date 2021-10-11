@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import TDraggableBorderProps from '../models/TDraggableBorderProps';
 import IDragTargetApi from '../models/IDragTargetApi';
-import MDragTarget from '../models/MDragTarget';
+import DragTarget from '../models/DragTarget';
 
 export function getElement(data: string){
     return document.querySelector(data) || null;
@@ -27,7 +27,7 @@ export default function useUpdateTargetElementRect(props: TDraggableBorderProps,
 
         if(!(draggerElement || targetElement || stretchElement)) return;
         console.log(stretchElement);
-        new MDragTarget({
+        new DragTarget({
             ...props,
             stretchElement,
             draggerElement,

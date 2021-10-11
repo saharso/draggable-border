@@ -1,6 +1,6 @@
 import TDragTargetUtilOptions from './TDragTargetUtilOptions';
 
-export default class DragTargetUtil {
+export default class DragTargetRectUtil {
     horizontal: boolean;
     static draggerCollectionX: HTMLElement[] = [];
     static targetCollectionX: HTMLElement[] = [];
@@ -17,14 +17,14 @@ export default class DragTargetUtil {
     handleDraggersRect(draggerElement, index) {
         const options: TDragTargetUtilOptions = {
             horizontal: ()=>{
-                draggerElement.style.top = DragTargetUtil.targetCollectionX[index].getBoundingClientRect().top + 'px';
-                draggerElement.style.left = DragTargetUtil.targetCollectionX[index].getBoundingClientRect().right + 'px';
-                draggerElement.style.height = DragTargetUtil.targetCollectionX[index].offsetHeight + 'px';
+                draggerElement.style.top = DragTargetRectUtil.targetCollectionX[index].getBoundingClientRect().top + 'px';
+                draggerElement.style.left = DragTargetRectUtil.targetCollectionX[index].getBoundingClientRect().right + 'px';
+                draggerElement.style.height = DragTargetRectUtil.targetCollectionX[index].offsetHeight + 'px';
             },
             vertical: ()=>{
-                draggerElement.style.top = DragTargetUtil.targetCollectionY[index].getBoundingClientRect().top - draggerElement.offsetHeight + 'px';
-                draggerElement.style.left = DragTargetUtil.targetCollectionY[index].getBoundingClientRect().left + 'px';
-                draggerElement.style.width = DragTargetUtil.targetCollectionY[index].offsetWidth + 'px';
+                draggerElement.style.top = DragTargetRectUtil.targetCollectionY[index].getBoundingClientRect().top - draggerElement.offsetHeight + 'px';
+                draggerElement.style.left = DragTargetRectUtil.targetCollectionY[index].getBoundingClientRect().left + 'px';
+                draggerElement.style.width = DragTargetRectUtil.targetCollectionY[index].offsetWidth + 'px';
             }
         };
         options[this.horizontalKey]();
@@ -33,12 +33,12 @@ export default class DragTargetUtil {
     setCollection(draggerElement, targetElement) {
         const options: TDragTargetUtilOptions = {
             horizontal: () => {
-                DragTargetUtil.draggerCollectionX.push(draggerElement);
-                DragTargetUtil.targetCollectionX.push(targetElement);
+                DragTargetRectUtil.draggerCollectionX.push(draggerElement);
+                DragTargetRectUtil.targetCollectionX.push(targetElement);
             },
             vertical: () => {
-                DragTargetUtil.draggerCollectionY.push(draggerElement);
-                DragTargetUtil.targetCollectionY.push(targetElement);
+                DragTargetRectUtil.draggerCollectionY.push(draggerElement);
+                DragTargetRectUtil.targetCollectionY.push(targetElement);
             }
         };
         options[this.horizontalKey]();
@@ -106,11 +106,11 @@ export default class DragTargetUtil {
     }
     updateDraggingElementsRect(){
         requestAnimationFrame(()=>{
-            DragTargetUtil.draggerCollectionX.forEach((draggerElement, index) => {
-                new DragTargetUtil(true).handleDraggersRect(draggerElement, index);
+            DragTargetRectUtil.draggerCollectionX.forEach((draggerElement, index) => {
+                new DragTargetRectUtil(true).handleDraggersRect(draggerElement, index);
             });
-            DragTargetUtil.draggerCollectionY.forEach((draggerElement, index) => {
-                new DragTargetUtil(false).handleDraggersRect(draggerElement, index);
+            DragTargetRectUtil.draggerCollectionY.forEach((draggerElement, index) => {
+                new DragTargetRectUtil(false).handleDraggersRect(draggerElement, index);
             });
         });
     }
