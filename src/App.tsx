@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.scss';
 import AppContext from './models/context';
-import Panel from './components/Panel/Panel';
+import Panel from './components/Demo/Panel';
 
 function App() {
     
