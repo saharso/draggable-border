@@ -3,5 +3,6 @@ type TDraggableBorderProps = {
     stretch?: string;
     horizontal: boolean;
     defaultWidth?: string | number;
+    invertSlide?: boolean;
 }
 export default TDraggableBorderProps;

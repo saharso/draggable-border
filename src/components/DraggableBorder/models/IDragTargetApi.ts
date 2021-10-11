@@ -4,8 +4,9 @@ interface IDragTargetApi {
     targetElement: HTMLElement;
     draggerElement: HTMLElement;
     stretchElement: HTMLElement;
+    horizontal: boolean;
+    invertSlide?: boolean;
     snap?: number;
-    horizontal?: boolean;
     onAfterDrag?: (e: IOnAfterDragApi) => any;
 }
 

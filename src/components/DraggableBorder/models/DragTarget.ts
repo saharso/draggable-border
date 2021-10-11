@@ -12,6 +12,7 @@ export default class DragTarget implements IDragTargetApi {
     snap: number = 100;
     horizontal: boolean = true;
     isSlideForward: boolean;
+    invertSlide: boolean = false;
     clientMovement: Set<number> = new Set();
     rectUtil: DragTargetRectUtil;
     domUtil: DragTargetDomUtil;
@@ -19,6 +20,7 @@ export default class DragTarget implements IDragTargetApi {
 
     constructor(api: IDragTargetApi) {
         this.updateWithApi(api);
+        console.log(this);
         this.updateDraggerElement();
         this.handleEvents();
         this.rectUtil.updateDraggingElementsRect();

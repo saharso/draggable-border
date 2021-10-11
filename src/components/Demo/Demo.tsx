@@ -11,7 +11,7 @@ const Demo: React.FunctionComponent<PanelProps> = ({}) => {
         <DraggableBorder target={'#panelSidebar'} horizontal={true}/>
         <DraggableBorder target={'#panelSidebar3'} horizontal={false}/>
         <DraggableBorder target={'#panelSidebar4'} horizontal={false}/>
-        <DraggableBorder target={'#panelSidebar5'} horizontal={true}/>
+        <DraggableBorder target={'#panelSidebar5'} horizontal={true} invertSlide={true}/>
 
         <article className={'Panel'}>
 
