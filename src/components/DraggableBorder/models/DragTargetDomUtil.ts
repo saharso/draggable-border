@@ -6,9 +6,7 @@ function computeStyle(el: HTMLElement, prop: string){
 function getDisplayLevel(el: HTMLElement) {
     return computeStyle(el, 'display');
 }
-function getWidth(el: HTMLElement) {
-    return window.getComputedStyle(el).getPropertyValue('width');
-}
+
 function isAutoDimensions(el: HTMLElement){
     let clone = <HTMLElement>el.cloneNode(true);
     clone.style.display = 'inline-block';
@@ -53,22 +51,33 @@ export default class DragTargetDomUtil {
         this.targetElement.classList.add('DraggableBorder-target');
         const parent = <HTMLElement>this.targetElement.parentNode;
         const children = <HTMLElement[]>Array.from(parent.children);
-        parent.classList.add('DraggableBorder-parent', this.horizontalClassName);
+
+        this.addClassesToParent(parent);
         this.addClassToStretchElement(children);
+    }
+
+    private addClassesToParent(parent: HTMLElement){
+        const displayLevel = getDisplayLevel(parent);
+        let className;
+        switch (displayLevel) {
+        case 'grid' : className = 'DraggableBorder-parentGrid'; break;
+        default : className = 'DraggableBorder-parent';
+        }
+        parent.classList.add(className, this.horizontalClassName);
     }
 
     private addClassToStretchElement(children: HTMLElement[]){
         if(this.stretchElement) {
             this.stretchElement?.classList.add('DraggableBorder-stretch');
         } else {
-            const siblings = this.getChildSiblings(children);
+            const siblings = this.getStretchSiblings(children);
             siblings.forEach((el)=>{
                 el.classList.toggle('DraggableBorder-stretch', !!siblings.find(e=>e===el));
             });
         }
     }
 
-    private getChildSiblings(children: HTMLElement[]): HTMLElement[] {
+    private getStretchSiblings(children: HTMLElement[]): HTMLElement[] {
         const siblings = [].filter.call(children, (child)=>{
             const isTarget = child.classList.contains('DraggableBorder-target');
             const isDragger = child.classList.contains('DraggableBorder');

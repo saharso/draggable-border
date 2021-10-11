@@ -1,9 +1,10 @@
 .Panel {
-  display: flex;
+  display: grid;
   height: 100vh;
+  grid-template-columns: auto auto 1fr;
 }
 .Panel__sidebar {
-  width: 30%;
+  width: 16em;
   background-color: cornflowerblue;
 }
 .Panel__addition {
@@ -11,7 +12,7 @@
   background-color: darkorange;
 }
 .Panel__main {
-  flex: 1 1;
+  flex: unset !important;
   border: 1px solid red;
 }
 .Panel__main__bottom {

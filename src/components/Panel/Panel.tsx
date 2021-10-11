@@ -6,32 +6,35 @@ export type PanelProps = {}
 
 const Panel: React.FunctionComponent<PanelProps> = ({}) => {
 
-    return <article className={'Panel'}>
-        <aside className={'Panel__addition'}/>
-
+    return <>
+        <DraggableBorder target={'#panelSidebar2'} horizontal={false}/>
         <DraggableBorder target={'#panelSidebar'} horizontal={true}/>
+        <DraggableBorder target={'#panelSidebar3'} horizontal={false}/>
+        <DraggableBorder target={'#panelSidebar4'} horizontal={false}/>
 
-        <aside id="panelSidebar" className={'Panel__sidebar l-column'}>
-            <div id="stretch" className={'l-stretch'}></div>
+        <article className={'Panel'}>
 
-            <DraggableBorder target={'#panelSidebar3'} horizontal={false}/>
-            <section id="panelSidebar3" className={'Panel__main__bottom'}></section>
+            <aside className={'Panel__addition'}></aside>
 
-        </aside>
+            <aside id="panelSidebar" className={'Panel__sidebar l-column'}>
+                <div id="stretch" className={'l-stretch'}></div>
 
-        <main className={'Panel__main l-column'}>
-            <div className={'Panel__main__top l-stretch'}></div>
+                <section id="panelSidebar3" className={'Panel__main__bottom'}></section>
 
-            <DraggableBorder target={'#panelSidebar2'} horizontal={false}/>
-            <section id="panelSidebar2" className={'Panel__main__bottom'}></section>
+            </aside>
 
-            <DraggableBorder target={'#panelSidebar4'} horizontal={false}/>
-            <section id="panelSidebar4" className={'Panel__main__bottom'}></section>
+            <main className={'Panel__main l-column'}>
+                <div className={'Panel__main__top l-stretch'}></div>
 
-            <footer className={'Panel-footerWithConstantHeight'}>footer</footer>
-        </main>
+                <section id="panelSidebar2" className={'Panel__main__bottom'}></section>
 
-    </article>;
+                <section id="panelSidebar4" className={'Panel__main__bottom'}></section>
+
+                <footer className={'Panel-footerWithConstantHeight'}>footer</footer>
+            </main>
+
+        </article>
+    </>;
 };
 
 export default Panel;
