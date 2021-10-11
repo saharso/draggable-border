@@ -1,7 +1,7 @@
 import TDragTargetUtilOptions from './TDragTargetUtilOptions';
 import IDragTargetApi from './IDragTargetApi';
 
-export type THorizontalKey = 'horizontal' | 'vertical';
+type THorizontalKey = 'horizontal' | 'vertical';
 
 export default class DragTargetRectUtil {
     horizontal: boolean;
@@ -20,7 +20,7 @@ export default class DragTargetRectUtil {
     get horizontalKey(): THorizontalKey { return this.horizontal ? 'horizontal' : 'vertical';}
     get className(): string {return `is-${this.horizontalKey}`;}
 
-    static handleDraggersRect(draggerElement, index, horizontalKey: THorizontalKey) {
+    static handleDraggersRect(draggerElement: HTMLElement, index: number, horizontalKey: THorizontalKey) {
         const options: TDragTargetUtilOptions = {
             horizontal: ()=>{
                 draggerElement.style.top = DragTargetRectUtil.targetCollectionX[index].getBoundingClientRect().top + 'px';
@@ -110,6 +110,17 @@ export default class DragTargetRectUtil {
         };
         return options[this.horizontalKey]();
     }
+    targetElementDim(targetElement) {
+        const options: TDragTargetUtilOptions = {
+            horizontal: () => {
+                return targetElement.offsetWidth;
+            },
+            vertical: () => {
+                return targetElement.offsetHeight;
+            }
+        };
+        return options[this.horizontalKey]();
+    }
     updateDraggingElementsRect(){
         requestAnimationFrame(()=>{
             DragTargetRectUtil.draggerCollectionX.forEach((draggerElement, index) => {
@@ -120,6 +131,5 @@ export default class DragTargetRectUtil {
             });
         });
     }
-
 
 };

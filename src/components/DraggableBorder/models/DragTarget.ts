@@ -14,6 +14,7 @@ export default class DragTarget implements IDragTargetApi {
     clientMovement: Set<number> = new Set();
     rectUtil: DragTargetRectUtil;
     domUtil: DragTargetDomUtil;
+    onAfterDrag;
 
     constructor(api: IDragTargetApi) {
         this.updateWithApi(api);
@@ -21,7 +22,7 @@ export default class DragTarget implements IDragTargetApi {
         this.handleEvents();
     }
 
-    updateWithApi(api: IDragTargetApi) {
+    private updateWithApi(api: IDragTargetApi) {
         Object.keys(api).forEach((key)=>{
             this[key] = api[key];
         });
@@ -29,11 +30,11 @@ export default class DragTarget implements IDragTargetApi {
         this.domUtil = new DragTargetDomUtil(api);
     }
 
-    updateDraggerElement(){
+    private updateDraggerElement(){
         this.draggerElement.classList.add(this.rectUtil.className);
     }
 
-    handleEvents(){
+    private handleEvents(){
         window.addEventListener('mouseup', this.handleMouseUp.bind(this));
         window.addEventListener('mousemove', this.handleMouseMove.bind(this));
         window.addEventListener('resize', this.handleResize.bind(this));
@@ -41,24 +42,30 @@ export default class DragTarget implements IDragTargetApi {
         this.rectUtil.updateDraggingElementsRect();
     }
 
-    handleMouseUp(e){
+    private handleMouseUp(e){
         e.preventDefault();
         this.isMouseDown = false;
         this.updateSlideDirection();
         this.doSnap();
+        this.onAfterDrag && this.onAfterDrag({
+            event: e,
+            el: this.targetElement,
+            horizontal: this.horizontal,
+            dimension: this.rectUtil.targetElementDim(this.targetElement),
+        });
     }
 
-    handleMouseDown(e){
+    private handleMouseDown(e){
         e.preventDefault();
         this.clientMovement.clear();
         this.isMouseDown = true;
     }
 
-    handleResize(){
+    private handleResize(){
         this.rectUtil.updateDraggingElementsRect();
     }
 
-    handleMouseMove(e){
+    private handleMouseMove(e){
         if(!this.isMouseDown) return;
         e.preventDefault();
         this.clientMovement.add(this.horizontal ? e.clientX : e.clientY);
@@ -67,22 +74,22 @@ export default class DragTarget implements IDragTargetApi {
         this.rectUtil.updateDraggingElementsRect();
     }
 
-    updateFormula(e) {
+    private updateFormula(e) {
         this.formula = this.rectUtil.calculateTargetRect(e, this.targetElement);
     }
 
-    updateSlideDirection(){
+    private updateSlideDirection(){
         const vals = [...this.clientMovement.values()];
         const prev = vals.pop();
         const next = vals.pop();
         this.isSlideForward = this.horizontal ? prev < next : prev > next;
     }
 
-    updateTargetElementDimensions(){
+    private updateTargetElementDimensions(){
         this.rectUtil.updateTargetElementDimensions(this.targetElement, this.formula);
     }
 
-    doSnap(){
+    private doSnap(){
         const allowSnap = this.rectUtil.allowSnap(this.targetElement, this.snap);
         const conditions = [
             this.isSlideForward,
@@ -96,4 +103,5 @@ export default class DragTarget implements IDragTargetApi {
         }
         this.domUtil.toggleSnappedClasses(this.targetElement, this.draggerElement, allowSnap);
     }
+
 }

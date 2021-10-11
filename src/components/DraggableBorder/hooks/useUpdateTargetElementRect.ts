@@ -11,6 +11,7 @@ export default function useUpdateTargetElementRect(props: TDraggableBorderProps,
     const [targetElement, setTargetElement] = useState(null);
     const [draggerElement, setDraggerElement] = useState(null);
     const [stretchElement, setStretchElement] = useState(null);
+    const [dimensions, setDimensions] = useState(0);
 
     useEffect(()=>{
         if(!draggableBorderRef) return;
@@ -26,12 +27,18 @@ export default function useUpdateTargetElementRect(props: TDraggableBorderProps,
     useEffect(()=>{
 
         if(!(draggerElement || targetElement || stretchElement)) return;
-        console.log(stretchElement);
         new DragTarget({
             ...props,
             stretchElement,
             draggerElement,
             targetElement,
+            onAfterDrag: (e) => {
+                setDimensions(e.dimension);
+            }
         });
     }, [draggerElement, targetElement, stretchElement]);
+
+    useEffect(()=>{
+        console.log(dimensions);
+    }, [dimensions]);
 }

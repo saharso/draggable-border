@@ -32,7 +32,6 @@ export default class DragTargetDomUtil {
 
     private addClassToSiblings(children: HTMLElement[]){
         const siblings = this.getChildSiblings(children);
-        console.log(siblings);
         siblings.forEach((el)=>{
             el.classList.toggle('DraggableBorder-sibling', !!siblings.find(e=>e===el));
         });
