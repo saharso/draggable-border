@@ -51,18 +51,21 @@ export default class DragTargetDomUtil {
     private addClasses(){
         if(this.targetElement.classList.contains('DraggableBorder-target')) return;
         this.targetElement.classList.add('DraggableBorder-target');
-        this.stretchElement?.classList.add('DraggableBorder-stretch');
         const parent = <HTMLElement>this.targetElement.parentNode;
         const children = <HTMLElement[]>Array.from(parent.children);
         parent.classList.add('DraggableBorder-parent', this.horizontalClassName);
-        this.addClassToSiblings(children);
+        this.addClassToStretchElement(children);
     }
 
-    private addClassToSiblings(children: HTMLElement[]){
-        const siblings = this.getChildSiblings(children);
-        siblings.forEach((el)=>{
-            el.classList.toggle('DraggableBorder-stretch', !!siblings.find(e=>e===el));
-        });
+    private addClassToStretchElement(children: HTMLElement[]){
+        if(this.stretchElement) {
+            this.stretchElement?.classList.add('DraggableBorder-stretch');
+        } else {
+            const siblings = this.getChildSiblings(children);
+            siblings.forEach((el)=>{
+                el.classList.toggle('DraggableBorder-stretch', !!siblings.find(e=>e===el));
+            });
+        }
     }
 
     private getChildSiblings(children: HTMLElement[]): HTMLElement[] {
