@@ -1,20 +1,26 @@
 import TDragTargetUtilOptions from './TDragTargetUtilOptions';
+import IDragTargetApi from './IDragTargetApi';
+
+export type THorizontalKey = 'horizontal' | 'vertical';
 
 export default class DragTargetRectUtil {
     horizontal: boolean;
+    api: IDragTargetApi;
     static draggerCollectionX: HTMLElement[] = [];
     static targetCollectionX: HTMLElement[] = [];
     static draggerCollectionY: HTMLElement[] = [];
     static targetCollectionY: HTMLElement[] = [];
 
-    constructor(horizontal: boolean) {
-        this.horizontal = horizontal;
+    constructor(api: IDragTargetApi) {
+        this.api = api;
+        this.horizontal = api.horizontal;
+        this.setElementsCollection(api.draggerElement, api.targetElement);
     }
 
-    get horizontalKey(){ return this.horizontal ? 'horizontal' : 'vertical';}
+    get horizontalKey(): THorizontalKey { return this.horizontal ? 'horizontal' : 'vertical';}
     get className(): string {return `is-${this.horizontalKey}`;}
 
-    handleDraggersRect(draggerElement, index) {
+    static handleDraggersRect(draggerElement, index, horizontalKey: THorizontalKey) {
         const options: TDragTargetUtilOptions = {
             horizontal: ()=>{
                 draggerElement.style.top = DragTargetRectUtil.targetCollectionX[index].getBoundingClientRect().top + 'px';
@@ -27,10 +33,10 @@ export default class DragTargetRectUtil {
                 draggerElement.style.width = DragTargetRectUtil.targetCollectionY[index].offsetWidth + 'px';
             }
         };
-        options[this.horizontalKey]();
+        options[horizontalKey]();
     }
 
-    setCollection(draggerElement, targetElement) {
+    setElementsCollection(draggerElement, targetElement) {
         const options: TDragTargetUtilOptions = {
             horizontal: () => {
                 DragTargetRectUtil.draggerCollectionX.push(draggerElement);
@@ -107,10 +113,10 @@ export default class DragTargetRectUtil {
     updateDraggingElementsRect(){
         requestAnimationFrame(()=>{
             DragTargetRectUtil.draggerCollectionX.forEach((draggerElement, index) => {
-                new DragTargetRectUtil(true).handleDraggersRect(draggerElement, index);
+                DragTargetRectUtil.handleDraggersRect(draggerElement, index, 'horizontal');
             });
             DragTargetRectUtil.draggerCollectionY.forEach((draggerElement, index) => {
-                new DragTargetRectUtil(false).handleDraggersRect(draggerElement, index);
+                DragTargetRectUtil.handleDraggersRect(draggerElement, index, 'vertical');
             });
         });
     }

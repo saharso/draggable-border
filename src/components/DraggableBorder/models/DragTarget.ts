@@ -18,7 +18,6 @@ export default class DragTarget implements IDragTargetApi {
     constructor(api: IDragTargetApi) {
         this.updateWithApi(api);
         this.updateDraggerElement();
-        this.setCollection();
         this.handleEvents();
     }
 
@@ -26,16 +25,12 @@ export default class DragTarget implements IDragTargetApi {
         Object.keys(api).forEach((key)=>{
             this[key] = api[key];
         });
-        this.rectUtil = new DragTargetRectUtil(this.horizontal);
+        this.rectUtil = new DragTargetRectUtil(api);
         this.domUtil = new DragTargetDomUtil(api);
     }
 
     updateDraggerElement(){
         this.draggerElement.classList.add(this.rectUtil.className);
-    }
-
-    setCollection() {
-        this.rectUtil.setCollection(this.draggerElement, this.targetElement);
     }
 
     handleEvents(){
