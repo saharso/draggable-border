@@ -39,7 +39,4 @@ export default function useUpdateTargetElementRect(props: TDraggableBorderProps,
         });
     }, [draggerElement, targetElement, stretchElement]);
 
-    useEffect(()=>{
-        console.log(dimensions);
-    }, [dimensions]);
 }

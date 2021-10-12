@@ -1,7 +1,8 @@
 .DraggableBorder {
   position: absolute;
-  width: 4px;
-  height: 4px;
+  width: 8px;
+  height: 8px;
+  opacity: 0.5;
   background-color: black;
   cursor: col-resize;
   user-select: none;
@@ -21,4 +22,5 @@
 }
 .DraggableBorder-stretch {
   flex: 1 1;
+  overflow: auto;
 }

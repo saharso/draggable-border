@@ -33,7 +33,7 @@ export default class DragTargetRectUtil {
             },
             right: ()=>{
                 draggerElement.style.top = DragTargetRectUtil.targetCollectionRight[index].getBoundingClientRect().top + 'px';
-                draggerElement.style.left = DragTargetRectUtil.targetCollectionRight[index].getBoundingClientRect().right + 'px';
+                draggerElement.style.left = DragTargetRectUtil.targetCollectionRight[index].getBoundingClientRect().right - draggerElement.offsetWidth + 'px';
                 draggerElement.style.height = DragTargetRectUtil.targetCollectionRight[index].offsetHeight + 'px';
             },
             left: ()=>{
@@ -42,7 +42,7 @@ export default class DragTargetRectUtil {
                 draggerElement.style.height = DragTargetRectUtil.targetCollectionLeft[index].offsetHeight + 'px';
             },
             bottom: ()=>{
-                draggerElement.style.top = DragTargetRectUtil.targetCollectionBottom[index].getBoundingClientRect().bottom + 'px';
+                draggerElement.style.top = DragTargetRectUtil.targetCollectionBottom[index].getBoundingClientRect().bottom - draggerElement.offsetHeight + 'px';
                 draggerElement.style.left = DragTargetRectUtil.targetCollectionBottom[index].getBoundingClientRect().left + 'px';
                 draggerElement.style.width = DragTargetRectUtil.targetCollectionBottom[index].offsetWidth + 'px';
             }
@@ -114,21 +114,40 @@ export default class DragTargetRectUtil {
 
 
     updateTargetElementDimensions(targetElement, formula){
+        const preventUpdate = this.preventUpdate(targetElement, formula);
         const options: TDragTargetUtilOptions = {
             top: () => {
+                if(preventUpdate.top()) return;
+                console.log(formula);
                 targetElement.style.height = formula + 'px';
             },
             right: () => {
+                if(preventUpdate.right()) return;
                 targetElement.style.width = formula + 'px';
             },
             left: ()=>{
+                if(preventUpdate.left()) return;
                 targetElement.style.width = formula + 'px';
             },
             bottom: ()=>{
+                if(preventUpdate.bottom()) return;
                 targetElement.style.height = formula + 'px';
             },
         };
         options[this.horizontalKey]();
+    }
+
+    preventUpdate(targetElement, formula): TDragTargetUtilOptions {
+        return {
+            top: ()=>{
+                const parentTop = targetElement.parentNode.getBoundingClientRect().top;
+                console.log(parentTop , formula);
+                return parentTop > formula;
+            },
+            right: ()=>{},
+            left: ()=>{},
+            bottom: ()=>{},
+        };
     }
 
     allowSnap(targetElement, snap){
