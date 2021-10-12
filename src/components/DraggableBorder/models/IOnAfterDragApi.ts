@@ -1,7 +1,9 @@
+import TRectSides from './TRectSides';
+
 interface IOnAfterDragApi {
     dimension: number;
     el: HTMLElement;
     event: MouseEvent;
-    horizontal: boolean;
+    side: TRectSides;
 }
 export default IOnAfterDragApi;

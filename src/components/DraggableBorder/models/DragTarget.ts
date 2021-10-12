@@ -2,6 +2,7 @@ import IDragTargetApi from './IDragTargetApi';
 import DragTargetRectUtil from './DragTargetRectUtil';
 import DragTargetDomUtil from './DragTargetDomUtil';
 import IOnAfterDragApi from './IOnAfterDragApi';
+import TRectSides from './TRectSides';
 
 export default class DragTarget implements IDragTargetApi {
     formula: number;
@@ -13,6 +14,7 @@ export default class DragTarget implements IDragTargetApi {
     horizontal: boolean = true;
     isSlideForward: boolean;
     invertSlide: boolean = false;
+    side: TRectSides;
     clientMovement: Set<number> = new Set();
     rectUtil: DragTargetRectUtil;
     domUtil: DragTargetDomUtil;
@@ -52,7 +54,7 @@ export default class DragTarget implements IDragTargetApi {
         this.onAfterDrag && this.onAfterDrag(<IOnAfterDragApi>{
             event: e,
             el: this.targetElement,
-            horizontal: this.horizontal,
+            side: this.side,
             dimension: this.rectUtil.targetElementDim(this.targetElement),
         });
     }

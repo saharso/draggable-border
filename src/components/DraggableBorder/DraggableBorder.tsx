@@ -12,6 +12,7 @@ const DraggableBorder: React.FunctionComponent<TDraggableBorderProps> = (props)=
     return <div
         ref={draggableBorderRef}
         className={'DraggableBorder'}
+        tabIndex={-1}
     />;
 };
 

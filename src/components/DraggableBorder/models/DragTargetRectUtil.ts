@@ -1,15 +1,14 @@
 import TDragTargetUtilOptions from './TDragTargetUtilOptions';
 import IDragTargetApi from './IDragTargetApi';
-
-export type THorizontalKey = 'top' | 'right' | 'left' | 'bottom';
+import TRectSides from './TRectSides';
 
 export default class DragTargetRectUtil {
     horizontal: boolean;
     api: IDragTargetApi;
-    static draggerCollectionX: HTMLElement[] = [];
-    static targetCollectionX: HTMLElement[] = [];
-    static draggerCollectionY: HTMLElement[] = [];
-    static targetCollectionY: HTMLElement[] = [];
+    static draggerCollectionTop: HTMLElement[] = [];
+    static targetCollectionTop: HTMLElement[] = [];
+    static draggerCollectionRight: HTMLElement[] = [];
+    static targetCollectionRight: HTMLElement[] = [];
     static draggerCollectionLeft: HTMLElement[] = [];
     static targetCollectionLeft: HTMLElement[] = [];
     static draggerCollectionBottom: HTMLElement[] = [];
@@ -17,34 +16,25 @@ export default class DragTargetRectUtil {
 
     constructor(api: IDragTargetApi) {
         this.api = api;
-        this.horizontal = api.horizontal;
         this.setElementsCollection(api.draggerElement, api.targetElement);
     }
 
-    get horizontalKey(): THorizontalKey {
-        if(this.api.horizontal && this.api.invertSlide){
-            return 'left';
-        }
-        else if(!this.api.horizontal && this.api.invertSlide){
-            return 'bottom';
-        }
-        else {
-            return this.api.horizontal ? 'top' : 'right';
-        }
+    get horizontalKey(): TRectSides {
+        return this.api.side;
     }
     get className(): string {return `is-${this.horizontalKey}`;}
 
-    static handleDraggersRect(draggerElement: HTMLElement, index: number, horizontalKey: THorizontalKey) {
+    static handleDraggersRect(draggerElement: HTMLElement, index: number, horizontalKey: TRectSides) {
         const options: TDragTargetUtilOptions = {
             top: ()=>{
-                draggerElement.style.top = DragTargetRectUtil.targetCollectionX[index].getBoundingClientRect().top + 'px';
-                draggerElement.style.left = DragTargetRectUtil.targetCollectionX[index].getBoundingClientRect().right + 'px';
-                draggerElement.style.height = DragTargetRectUtil.targetCollectionX[index].offsetHeight + 'px';
+                draggerElement.style.top = DragTargetRectUtil.targetCollectionTop[index].getBoundingClientRect().top + 'px';
+                draggerElement.style.left = DragTargetRectUtil.targetCollectionTop[index].getBoundingClientRect().left + 'px';
+                draggerElement.style.width = DragTargetRectUtil.targetCollectionTop[index].offsetWidth + 'px';
             },
             right: ()=>{
-                draggerElement.style.top = DragTargetRectUtil.targetCollectionY[index].getBoundingClientRect().top - draggerElement.offsetHeight + 'px';
-                draggerElement.style.left = DragTargetRectUtil.targetCollectionY[index].getBoundingClientRect().left + 'px';
-                draggerElement.style.width = DragTargetRectUtil.targetCollectionY[index].offsetWidth + 'px';
+                draggerElement.style.top = DragTargetRectUtil.targetCollectionRight[index].getBoundingClientRect().top + 'px';
+                draggerElement.style.left = DragTargetRectUtil.targetCollectionRight[index].getBoundingClientRect().right + 'px';
+                draggerElement.style.height = DragTargetRectUtil.targetCollectionRight[index].offsetHeight + 'px';
             },
             left: ()=>{
                 draggerElement.style.top = DragTargetRectUtil.targetCollectionLeft[index].getBoundingClientRect().top + 'px';
@@ -60,45 +50,21 @@ export default class DragTargetRectUtil {
         options[horizontalKey]();
     }
 
-    private setElementsCollection(draggerElement, targetElement) {
-        const options: TDragTargetUtilOptions = {
-            top: () => {
-                DragTargetRectUtil.draggerCollectionX.push(draggerElement);
-                DragTargetRectUtil.targetCollectionX.push(targetElement);
-            },
-            right: () => {
-                DragTargetRectUtil.draggerCollectionY.push(draggerElement);
-                DragTargetRectUtil.targetCollectionY.push(targetElement);
-            },
-            left: ()=>{
-                DragTargetRectUtil.draggerCollectionLeft.push(draggerElement);
-                DragTargetRectUtil.targetCollectionLeft.push(targetElement);
-            },
-            bottom: ()=>{
-                DragTargetRectUtil.draggerCollectionBottom.push(draggerElement);
-                DragTargetRectUtil.targetCollectionBottom.push(targetElement);
-            },
-        };
-        options[this.horizontalKey]();
-    }
-
     calculateTargetDimension(e, targetElement){
         const options: TDragTargetUtilOptions = {
             top: () => {
-                const cursorXPosition = e.clientX;
-                const targetOriginalWidth = targetElement.offsetWidth;
-                const targetElementLeftPosition = targetElement.getBoundingClientRect().left;
+                const cursorYPosition = e.clientY;
+                const targetElementBottomPosition = targetElement.getBoundingClientRect().bottom;
 
-                const formula = targetOriginalWidth - targetElementLeftPosition + (cursorXPosition - targetOriginalWidth);
+                const formula = targetElementBottomPosition - cursorYPosition ;
 
                 return formula;
             },
             right: () => {
-                const cursorYPosition = e.clientY;
-                const targetOriginalHeight = targetElement.offsetHeight;
-                const targetElementTopPosition = targetElement.getBoundingClientRect().top;
+                const cursorXPosition = e.clientX;
+                const targetElementLeftPosition = targetElement.getBoundingClientRect().left;
 
-                const formula = targetOriginalHeight - (cursorYPosition - targetElementTopPosition);
+                const formula = cursorXPosition - targetElementLeftPosition;
 
                 return formula;
             },
@@ -123,13 +89,37 @@ export default class DragTargetRectUtil {
 
     }
 
+
+    private setElementsCollection(draggerElement, targetElement) {
+        const options: TDragTargetUtilOptions = {
+            top: () => {
+                DragTargetRectUtil.draggerCollectionTop.push(draggerElement);
+                DragTargetRectUtil.targetCollectionTop.push(targetElement);
+            },
+            right: () => {
+                DragTargetRectUtil.draggerCollectionRight.push(draggerElement);
+                DragTargetRectUtil.targetCollectionRight.push(targetElement);
+            },
+            left: ()=>{
+                DragTargetRectUtil.draggerCollectionLeft.push(draggerElement);
+                DragTargetRectUtil.targetCollectionLeft.push(targetElement);
+            },
+            bottom: ()=>{
+                DragTargetRectUtil.draggerCollectionBottom.push(draggerElement);
+                DragTargetRectUtil.targetCollectionBottom.push(targetElement);
+            },
+        };
+        options[this.horizontalKey]();
+    }
+
+
     updateTargetElementDimensions(targetElement, formula){
         const options: TDragTargetUtilOptions = {
             top: () => {
-                targetElement.style.width = formula + 'px';
+                targetElement.style.height = formula + 'px';
             },
             right: () => {
-                targetElement.style.height = formula + 'px';
+                targetElement.style.width = formula + 'px';
             },
             left: ()=>{
                 targetElement.style.width = formula + 'px';
@@ -186,10 +176,10 @@ export default class DragTargetRectUtil {
     }
     updateDraggingElementsRect(){
         requestAnimationFrame(()=>{
-            DragTargetRectUtil.draggerCollectionX.forEach((draggerElement, index) => {
+            DragTargetRectUtil.draggerCollectionTop.forEach((draggerElement, index) => {
                 DragTargetRectUtil.handleDraggersRect(draggerElement, index, 'top');
             });
-            DragTargetRectUtil.draggerCollectionY.forEach((draggerElement, index) => {
+            DragTargetRectUtil.draggerCollectionRight.forEach((draggerElement, index) => {
                 DragTargetRectUtil.handleDraggersRect(draggerElement, index, 'right');
             });
             DragTargetRectUtil.draggerCollectionLeft.forEach((draggerElement, index) => {

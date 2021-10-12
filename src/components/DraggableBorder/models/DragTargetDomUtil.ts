@@ -27,18 +27,21 @@ function isAutoDimensions(el: HTMLElement){
     };
 }
 export default class DragTargetDomUtil {
-    horizontal: boolean;
-    targetElement: HTMLElement
-    stretchElement: HTMLElement
+    targetElement: HTMLElement;
+    stretchElement: HTMLElement;
+    api: IDragTargetApi;
     constructor(api: IDragTargetApi) {
-        this.horizontal = api.horizontal;
         this.targetElement = api.targetElement;
         this.stretchElement = api.stretchElement;
+        this.api = api;
         this.addClasses();
     }
 
     get horizontalClassName(){
-        return this.horizontal ? 'is-horizontal' : 'is-vertical';
+        return `is-${this.api.side}`;
+    }
+    get isHorizontal (){
+        return 'top bottom'.includes(this.api.side);
     }
 
     toggleSnappedClasses(targetElement, draggerElement, allowSnap: boolean){
@@ -82,7 +85,7 @@ export default class DragTargetDomUtil {
             const isTarget = child.classList.contains('DraggableBorder-target');
             const isDragger = child.classList.contains('DraggableBorder');
             const autoDim = isAutoDimensions(child);
-            const isAutoDim = this.horizontal ? autoDim.isAutoWidth : autoDim.isAutoHeight;
+            const isAutoDim = this.isHorizontal ? autoDim.isAutoWidth : autoDim.isAutoHeight;
             return !(isTarget || isDragger || isAutoDim);
         });
         return siblings;

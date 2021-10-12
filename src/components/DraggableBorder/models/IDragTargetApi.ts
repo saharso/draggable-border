@@ -1,11 +1,11 @@
 import IOnAfterDragApi from './IOnAfterDragApi';
+import TRectSides from './TRectSides';
 
 interface IDragTargetApi {
     targetElement: HTMLElement;
     draggerElement: HTMLElement;
     stretchElement: HTMLElement;
-    horizontal: boolean;
-    invertSlide?: boolean;
+    side: TRectSides;
     snap?: number;
     onAfterDrag?: (e: IOnAfterDragApi) => any;
 }

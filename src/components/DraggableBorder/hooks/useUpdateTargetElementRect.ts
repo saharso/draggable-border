@@ -27,6 +27,7 @@ export default function useUpdateTargetElementRect(props: TDraggableBorderProps,
     useEffect(()=>{
 
         if(!(draggerElement || targetElement || stretchElement)) return;
+
         new DragTarget({
             ...props,
             stretchElement,

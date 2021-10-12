@@ -5,7 +5,7 @@
   background-color: black;
   cursor: col-resize;
   user-select: none;
-  &.is-vertical, &.is-bottom {
+  &.is-top, &.is-bottom {
     cursor: row-resize;
   }
   &.is-snapped {
@@ -16,7 +16,7 @@
 .DraggableBorder-parent {
   display: flex;
 }
-.DraggableBorder-parent.is-vertical {
+.DraggableBorder-parent.is-top, .DraggableBorder-parent.is-bottom {
   flex-direction: column;
 }
 .DraggableBorder-stretch {
