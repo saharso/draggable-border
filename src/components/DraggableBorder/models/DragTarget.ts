@@ -19,6 +19,7 @@ export default class DragTarget implements IDragTargetApi {
     rectUtil: DragTargetRectUtil;
     domUtil: DragTargetDomUtil;
     onAfterDrag;
+    private isRightClick: boolean;
 
     constructor(api: IDragTargetApi) {
         this.updateWithApi(api);
@@ -46,9 +47,28 @@ export default class DragTarget implements IDragTargetApi {
         this.draggerElement.addEventListener('mousedown', this.handleMouseDown.bind(this));
     }
 
+
+    private handleMouseDown(e){
+        e.preventDefault();
+        this.isRightClick = this.detectRightClick(e);
+        this.clientMovement.clear();
+        this.isMouseDown = true;
+    }
+
+    private handleMouseMove(e){
+        if(!this.isMouseDown || this.isRightClick) return;
+
+        e.preventDefault();
+        this.clientMovement.add(this.horizontal ? e.clientX : e.clientY);
+        this.updateFormula(e);
+        this.updateTargetElementDimensions();
+        this.rectUtil.updateDraggingElementsRect();
+    }
+
     private handleMouseUp(e){
         e.preventDefault();
         this.isMouseDown = false;
+        this.isRightClick = false;
         this.updateSlideDirection();
         this.doSnap();
         this.onAfterDrag && this.onAfterDrag(<IOnAfterDragApi>{
@@ -59,22 +79,8 @@ export default class DragTarget implements IDragTargetApi {
         });
     }
 
-    private handleMouseDown(e){
-        e.preventDefault();
-        this.clientMovement.clear();
-        this.isMouseDown = true;
-    }
 
     private handleResize(){
-        this.rectUtil.updateDraggingElementsRect();
-    }
-
-    private handleMouseMove(e){
-        if(!this.isMouseDown) return;
-        e.preventDefault();
-        this.clientMovement.add(this.horizontal ? e.clientX : e.clientY);
-        this.updateFormula(e);
-        this.updateTargetElementDimensions();
         this.rectUtil.updateDraggingElementsRect();
     }
 
@@ -106,6 +112,10 @@ export default class DragTarget implements IDragTargetApi {
             this.rectUtil.updateDraggingElementsRect();
         }
         this.domUtil.toggleSnappedClasses(this.targetElement, this.draggerElement, allowSnap);
+    }
+
+    private detectRightClick(e){
+        return e.which !== 1;
     }
 
 }
