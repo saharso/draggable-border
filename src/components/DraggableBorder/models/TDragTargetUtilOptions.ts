@@ -1,6 +1,8 @@
 type TDragTargetUtilOptions = {
-    horizontal: Function;
-    vertical: Function;
+    top: Function;
+    right: Function;
+    left: Function;
+    bottom: Function;
 }
 
 export default TDragTargetUtilOptions;

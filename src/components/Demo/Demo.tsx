@@ -12,6 +12,7 @@ const Demo: React.FunctionComponent<PanelProps> = ({}) => {
         <DraggableBorder target={'#panelSidebar3'} horizontal={false}/>
         <DraggableBorder target={'#panelSidebar4'} horizontal={false}/>
         <DraggableBorder target={'#panelSidebar5'} horizontal={true} invertSlide={true}/>
+        <DraggableBorder target={'#panelSidebar6'} horizontal={false} invertSlide={true}/>
 
         <article className={'Panel'}>
 
@@ -28,8 +29,10 @@ const Demo: React.FunctionComponent<PanelProps> = ({}) => {
                 <div className={'Panel__main__top l-stretch'}></div>
 
                 <section id="panelSidebar2" className={'Panel__main__bottom'}>
-                    <section id="panelSidebar5" style={{width: '12em'}}></section>
-                    <div></div>
+                    <div>
+                        <section id="panelSidebar6" style={{height: '6em', background: 'red'}}></section>
+                    </div>
+                    <section id="panelSidebar5" style={{width: '12em', background: 'red'}}></section>
                 </section>
 
                 <section id="panelSidebar4" className={'Panel__main__bottom'}></section>

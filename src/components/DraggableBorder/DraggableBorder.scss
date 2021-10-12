@@ -5,7 +5,7 @@
   background-color: black;
   cursor: col-resize;
   user-select: none;
-  &.is-vertical {
+  &.is-vertical, &.is-bottom {
     cursor: row-resize;
   }
   &.is-snapped {

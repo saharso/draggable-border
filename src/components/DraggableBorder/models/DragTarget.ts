@@ -20,7 +20,6 @@ export default class DragTarget implements IDragTargetApi {
 
     constructor(api: IDragTargetApi) {
         this.updateWithApi(api);
-        console.log(this);
         this.updateDraggerElement();
         this.handleEvents();
         this.rectUtil.updateDraggingElementsRect();
@@ -78,7 +77,7 @@ export default class DragTarget implements IDragTargetApi {
     }
 
     private updateFormula(e) {
-        this.formula = this.rectUtil.calculateTargetRect(e, this.targetElement);
+        this.formula = this.rectUtil.calculateTargetDimension(e, this.targetElement);
     }
 
     private updateSlideDirection(){
@@ -95,7 +94,7 @@ export default class DragTarget implements IDragTargetApi {
     private doSnap(){
         const allowSnap = this.rectUtil.allowSnap(this.targetElement, this.snap);
         const conditions = [
-            this.isSlideForward,
+            // this.isSlideForward,
             allowSnap,
         ].every(e=>e);
 
