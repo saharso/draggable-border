@@ -8,12 +8,13 @@ const Demo: React.FunctionComponent<PanelProps> = ({}) => {
 
     return <>
         <DraggableBorder
-            target={'#panelSidebar_right'}
+            targetElement={'#panelSidebar_right'}
             side={'right'}
         />
-        <DraggableBorder target={'#panelSidebar_2'} side={'top'}/>
-        <DraggableBorder target={'#panelSidebar_left'} side={'left'}/>
-        <DraggableBorder target={'#panelSidebar_botom'} side={'bottom'}/>
+        <DraggableBorder targetElement={'#panelSidebar_2'} side={'top'}/>
+        <DraggableBorder targetElement={'#panelSidebar_left'} side={'left'}/>
+        <DraggableBorder targetElement={'#panelSidebar_botom'} side={'bottom'}/>
+        <DraggableBorder targetElement={'#panelSidebar_bottom2'} side={'bottom'}/>
 
         <article className={'Panel'}>
 
@@ -29,7 +30,10 @@ const Demo: React.FunctionComponent<PanelProps> = ({}) => {
                     </div>
                     <aside id="panelSidebar_left" className={'Panel__sidebar'}>left</aside>
                 </div>
-                <aside id="panelSidebar_2" className={'Panel__sidebar'} style={{height: '8em', width: 'auto'}}>top</aside>
+                <aside id="panelSidebar_2" className={'Panel__sidebar'} style={{height: '8em', width: 'auto', paddingBottom: '0'}}>top
+
+                    <aside id="panelSidebar_bottom2" style={{height: '2em', background: '#444'}}>bottom</aside>
+                </aside>
             </div>
 
         </article>

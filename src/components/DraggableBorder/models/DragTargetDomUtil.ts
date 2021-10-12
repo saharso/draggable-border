@@ -1,38 +1,13 @@
 import IDragTargetApi from './IDragTargetApi';
+import getElement from '../utils/getElement';
+import * as computeCss from '../utils/computeCss';
 
-function computeStyle(el: HTMLElement, prop: string){
-    return window.getComputedStyle(el).getPropertyValue(prop);
-}
-function getDisplayLevel(el: HTMLElement) {
-    return computeStyle(el, 'display');
-}
-
-function isAutoDimensions(el: HTMLElement){
-    let clone = <HTMLElement>el.cloneNode(true);
-    clone.style.display = 'inline-block';
-    clone.style.position = 'fixed';
-    document.body.appendChild(clone);
-    clone.innerHTML = 'foo';
-    const widthWithContent = clone.offsetWidth;
-    const heightWithContent = clone.offsetHeight;
-    clone.innerHTML = '';
-    const widthWithoutContent = clone.offsetWidth;
-    const heightWithoutContent = clone.offsetHeight;
-    clone.parentNode.removeChild(clone);
-    clone = null;
-
-    return {
-        isAutoWidth: widthWithContent === widthWithoutContent,
-        isAutoHeight: heightWithContent === heightWithoutContent,
-    };
-}
 export default class DragTargetDomUtil {
     targetElement: HTMLElement;
     stretchElement: HTMLElement;
     api: IDragTargetApi;
     constructor(api: IDragTargetApi) {
-        this.targetElement = api.targetElement;
-        this.stretchElement = api.stretchElement;
+        this.targetElement = <HTMLElement>getElement(api.targetElement);
         this.api = api;
         this.addClasses();
     }
@@ -60,7 +35,7 @@ export default class DragTargetDomUtil {
     }
 
     private addClassesToParent(parent: HTMLElement){
-        const displayLevel = getDisplayLevel(parent);
+        const displayLevel = computeCss.getDisplayLevel(parent);
         let className;
         switch (displayLevel) {
         case 'grid' : className = 'DraggableBorder-parentGrid'; break;
@@ -84,7 +59,7 @@ export default class DragTargetDomUtil {
         const siblings = [].filter.call(children, (child)=>{
             const isTarget = child.classList.contains('DraggableBorder-target');
             const isDragger = child.classList.contains('DraggableBorder');
-            const autoDim = isAutoDimensions(child);
+            const autoDim = computeCss.isAutoDimensions(child);
             const isAutoDim = this.isHorizontal ? autoDim.isAutoWidth : autoDim.isAutoHeight;
             return !(isTarget || isDragger || isAutoDim);
         });

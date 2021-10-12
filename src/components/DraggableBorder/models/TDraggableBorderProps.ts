@@ -1,9 +1,12 @@
 import TRectSides from './TRectSides';
 
 type TDraggableBorderProps = {
-    target: string;
-    stretch?: string;
-    defaultWidth?: string | number;
+    targetElement: HTMLElement | string;
+    defaultValue?: number;
     side: TRectSides;
+    minValue?: number;
+    maxValue?: number;
+    snapDistance?: number;
+    smartLayout?: boolean;
 }
 export default TDraggableBorderProps;

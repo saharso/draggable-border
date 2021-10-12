@@ -1,6 +1,7 @@
 import TDragTargetUtilOptions from './TDragTargetUtilOptions';
 import IDragTargetApi from './IDragTargetApi';
 import TRectSides from './TRectSides';
+import getElement from '../utils/getElement';
 
 export default class DragTargetRectUtil {
     horizontal: boolean;
@@ -16,7 +17,7 @@ export default class DragTargetRectUtil {
 
     constructor(api: IDragTargetApi) {
         this.api = api;
-        this.setElementsCollection(api.draggerElement, api.targetElement);
+        this.setElementsCollection(api.draggerElement, getElement(api.targetElement));
     }
 
     get horizontalKey(): TRectSides {
@@ -118,7 +119,6 @@ export default class DragTargetRectUtil {
         const options: TDragTargetUtilOptions = {
             top: () => {
                 if(preventUpdate.top()) return;
-                console.log(formula);
                 targetElement.style.height = formula + 'px';
             },
             right: () => {
@@ -141,10 +141,14 @@ export default class DragTargetRectUtil {
         return {
             top: ()=>{
                 const parentTop = targetElement.parentNode.getBoundingClientRect().top;
-                console.log(parentTop , formula);
+
                 return parentTop > formula;
             },
-            right: ()=>{},
+            right: ()=>{
+                const limit = window.innerWidth - targetElement.getBoundingClientRect().left;
+                
+                return formula > limit;
+            },
             left: ()=>{},
             bottom: ()=>{},
         };

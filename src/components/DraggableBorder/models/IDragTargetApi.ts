@@ -1,12 +1,8 @@
 import IOnAfterDragApi from './IOnAfterDragApi';
-import TRectSides from './TRectSides';
+import TDraggableBorderProps from './TDraggableBorderProps';
 
-interface IDragTargetApi {
-    targetElement: HTMLElement;
+interface IDragTargetApi extends TDraggableBorderProps {
     draggerElement: HTMLElement;
-    stretchElement: HTMLElement;
-    side: TRectSides;
-    snap?: number;
     onAfterDrag?: (e: IOnAfterDragApi) => any;
 }
 

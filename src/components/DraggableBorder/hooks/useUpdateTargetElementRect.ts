@@ -8,35 +8,25 @@ export function getElement(data: string){
 }
 
 export default function useUpdateTargetElementRect(props: TDraggableBorderProps, draggableBorderRef){
-    const [targetElement, setTargetElement] = useState(null);
     const [draggerElement, setDraggerElement] = useState(null);
-    const [stretchElement, setStretchElement] = useState(null);
     const [dimensions, setDimensions] = useState(0);
 
     useEffect(()=>{
-        if(!draggableBorderRef) return;
-        setTargetElement(getElement(props.target));
-        setStretchElement(getElement(props.stretch));
         setDraggerElement(draggableBorderRef.current);
-    }, [draggableBorderRef]);
-
-    useEffect(()=>{
-        if(!targetElement) return;
-    }, [targetElement]);
+    }, [draggerElement]);
 
     useEffect(()=>{
 
-        if(!(draggerElement || targetElement || stretchElement)) return;
+        if(!(draggerElement)) return;
 
         new DragTarget({
             ...props,
-            stretchElement,
             draggerElement,
-            targetElement,
             onAfterDrag: (e) => {
                 setDimensions(e.dimension);
             }
         });
-    }, [draggerElement, targetElement, stretchElement]);
+
+    }, [draggerElement]);
 
 }

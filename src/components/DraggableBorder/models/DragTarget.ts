@@ -3,13 +3,13 @@ import DragTargetRectUtil from './DragTargetRectUtil';
 import DragTargetDomUtil from './DragTargetDomUtil';
 import IOnAfterDragApi from './IOnAfterDragApi';
 import TRectSides from './TRectSides';
+import getElement from '../utils/getElement';
 
 export default class DragTarget implements IDragTargetApi {
     formula: number;
     isMouseDown: boolean;
-    targetElement: HTMLElement;
     draggerElement: HTMLElement;
-    stretchElement: HTMLElement;
+    targetElement: HTMLElement | string;
     snap: number = 100;
     horizontal: boolean = true;
     isSlideForward: boolean;
@@ -23,6 +23,7 @@ export default class DragTarget implements IDragTargetApi {
 
     constructor(api: IDragTargetApi) {
         this.updateWithApi(api);
+        this.setUtils(api);
         this.updateDraggerElement();
         this.handleEvents();
         this.rectUtil.updateDraggingElementsRect();
@@ -32,6 +33,14 @@ export default class DragTarget implements IDragTargetApi {
         Object.keys(api).forEach((key)=>{
             this[key] = api[key];
         });
+        this.enforceTargetElement();
+    }
+
+    private enforceTargetElement(){
+        this.targetElement = <HTMLElement | string>getElement(this.targetElement);
+    }
+
+    private setUtils(api: IDragTargetApi){
         this.rectUtil = new DragTargetRectUtil(api);
         this.domUtil = new DragTargetDomUtil(api);
     }
