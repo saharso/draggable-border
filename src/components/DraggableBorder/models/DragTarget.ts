@@ -11,9 +11,7 @@ export default class DragTarget implements IDragTargetApi {
     isMouseDown: boolean;
     draggerElement: HTMLElement;
     targetElement: HTMLElement | string;
-    snap: number = 100;
     horizontal: boolean = true;
-    isSlideForward: boolean;
     invertSlide: boolean = false;
     smartLayout: boolean = false;
     side: TRectSides;
@@ -64,7 +62,8 @@ export default class DragTarget implements IDragTargetApi {
     }
 
     private handleMouseMove(e){
-        if(!this.eventsUtil.onMouseMove(e)) return;
+        this.eventsUtil.onMouseMove(e);
+        if(!this.eventsUtil.getFinalEventResults().allowMouseMoveHandling) return;
         this.updateFormula(e);
         this.updateTargetElementDimensions();
         this.rectUtil.updateDraggingElementsRect();
@@ -72,7 +71,7 @@ export default class DragTarget implements IDragTargetApi {
 
     private handleMouseUp(e){
         this.eventsUtil.onMouseUp(e);
-        // this.doSnap();
+        this.doSnap();
         this.onAfterDrag && this.onAfterDrag(<IOnAfterDragApi>{
             event: e,
             el: this.targetElement,
@@ -95,18 +94,7 @@ export default class DragTarget implements IDragTargetApi {
     }
 
     private doSnap(){
-        const allowSnap = this.rectUtil.allowSnap(this.targetElement, this.snap);
-        const conditions = [
-            this.isSlideForward,
-            allowSnap,
-        ].every(e=>e);
-
-        if(conditions){
-            this.formula = this.rectUtil.draggerElementDim(this.draggerElement);
-            this.updateTargetElementDimensions();
-            this.rectUtil.updateDraggingElementsRect();
-        }
-        this.domUtil.toggleSnappedClasses(this.targetElement, this.draggerElement, allowSnap);
+        this.rectUtil.snap(this.draggerElement, <HTMLElement>this.targetElement, this.eventsUtil.getFinalEventResults());
     }
 
 }

@@ -7,14 +7,11 @@ export type PanelProps = {}
 const Demo: React.FunctionComponent<PanelProps> = ({}) => {
 
     return <>
-        <DraggableBorder
-            targetElement={'#panelSidebar_right'}
-            side={'right'}
-        />
-        <DraggableBorder targetElement={'#panelSidebar_2'} side={'top'} smartLayout={true}/>
-        <DraggableBorder targetElement={'#panelSidebar_left'} side={'right'} smartLayout={false}/>
-        <DraggableBorder targetElement={'#panelSidebar_botom'} side={'bottom'} smartLayout={false}/>
-        <DraggableBorder targetElement={'#panelSidebar_bottom2'} side={'bottom'} smartLayout={false}/>
+        <DraggableBorder targetElement={'#panelSidebar_right'} side={'right'} snap={100}/>
+        <DraggableBorder targetElement={'#panelSidebar_2'} side={'top'} smartLayout={true} snap={100}/>
+        <DraggableBorder targetElement={'#panelSidebar_left'} side={'right'} smartLayout={false} snap={100}/>
+        <DraggableBorder targetElement={'#panelSidebar_botom'} side={'bottom'} smartLayout={false} snap={100}/>
+        <DraggableBorder targetElement={'#panelSidebar_bottom2'} side={'bottom'} smartLayout={false} snap={100}/>
 
         <article className={'Panel'}>
 

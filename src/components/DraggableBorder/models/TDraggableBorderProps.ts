@@ -8,5 +8,6 @@ type TDraggableBorderProps = {
     maxValue?: number;
     snapDistance?: number;
     smartLayout?: boolean;
+    snap?: number;
 }
 export default TDraggableBorderProps;

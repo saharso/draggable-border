@@ -154,23 +154,42 @@ export default class DragTargetRectUtil {
         };
     }
 
-    allowSnap(targetElement, snap){
+    snap(draggerElement, targetElement: HTMLElement, eventResults){
+
+        const dragDirection = eventResults.dragDirection;
+        if(!dragDirection) return;
+
         const options: TDragTargetUtilOptions = {
             top: () => {
-                return targetElement.offsetWidth <= snap;
+                const shouldSnapDown = dragDirection.isDragDown && targetElement.offsetHeight < this.api.snap;
+                shouldSnapDown && requestAnimationFrame(()=>{
+                    targetElement.style.height = draggerElement.offsetHeight + 'px';
+                });
             },
             right: () => {
-                return targetElement.offsetHeight <= snap;
+                console.log(dragDirection.isDragLeft, targetElement.offsetWidth , this.api.snap);
+                const shouldSnapLeft = dragDirection.isDragLeft && targetElement.offsetWidth < this.api.snap;
+                shouldSnapLeft && requestAnimationFrame(()=>{
+                    targetElement.style.width = draggerElement.offsetWidth + 'px';
+                });
             },
             left: ()=>{
-                return targetElement.offsetWidth <= snap;
+                const shouldSnapRight = dragDirection.isDragRight && targetElement.offsetWidth < this.api.snap;
+                shouldSnapRight && requestAnimationFrame(()=>{
+                    targetElement.style.width = draggerElement.offsetWidth + 'px';
+                });
             },
             bottom: ()=>{
-                return targetElement.offsetHeight <= snap;
+                const shouldSnapUp = dragDirection.isDragUp && targetElement.offsetHeight < this.api.snap;
+                shouldSnapUp && requestAnimationFrame(()=>{
+                    targetElement.style.height = draggerElement.offsetHeight + 'px';
+                });
             }
         };
-        return options[this.horizontalKey]();
+        options[this.horizontalKey]();
+        this.updateDraggingElementsRect();
     }
+
     draggerElementDim(draggerElement){
         const options: TDragTargetUtilOptions = {
             top: () => {
