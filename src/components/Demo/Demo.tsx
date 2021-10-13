@@ -11,10 +11,10 @@ const Demo: React.FunctionComponent<PanelProps> = ({}) => {
             targetElement={'#panelSidebar_right'}
             side={'right'}
         />
-        <DraggableBorder targetElement={'#panelSidebar_2'} side={'top'}/>
-        <DraggableBorder targetElement={'#panelSidebar_left'} side={'left'}/>
-        <DraggableBorder targetElement={'#panelSidebar_botom'} side={'bottom'}/>
-        <DraggableBorder targetElement={'#panelSidebar_bottom2'} side={'bottom'}/>
+        <DraggableBorder targetElement={'#panelSidebar_2'} side={'top'} smartLayout={true}/>
+        <DraggableBorder targetElement={'#panelSidebar_left'} side={'right'} smartLayout={false}/>
+        <DraggableBorder targetElement={'#panelSidebar_botom'} side={'bottom'} smartLayout={false}/>
+        <DraggableBorder targetElement={'#panelSidebar_bottom2'} side={'bottom'} smartLayout={false}/>
 
         <article className={'Panel'}>
 

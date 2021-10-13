@@ -25,6 +25,7 @@ export default class DragTargetDomUtil {
     }
 
     private addClasses(){
+        if(!this.api.smartLayout) return;
         if(this.targetElement.classList.contains('DraggableBorder-target')) return;
         this.targetElement.classList.add('DraggableBorder-target');
         const parent = <HTMLElement>this.targetElement.parentNode;
